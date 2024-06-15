@@ -28,7 +28,7 @@ public class ClientController {
     public ResponseEntity<ApiResponse> getAllClient(){
         try (ClientService clientService = new ClientService()) {
             List<Client> clients = clientService.getAllClient();
-            ApiResponse apiResponse = new ApiResponse(true,clients, null);
+            ApiResponse apiResponse = new ApiResponse(true, clients, null);
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
             logger.severe(e.getMessage());
@@ -49,7 +49,7 @@ url (example) : .../client/CLT_2
                 ApiResponse response = new ApiResponse(true, client, null);
                 return ResponseEntity.ok(response);
             } else {
-                String errorMessage = "Materiel not found : " + clientId;
+                String errorMessage = "Client not found : " + clientId;
                 ApiResponse response = new ApiResponse(false, null, errorMessage);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
@@ -64,10 +64,11 @@ url (example) : .../client/CLT_2
     url : .../client/save
     body (example) :
     {
-             "nom":tantandraza,
-            "prenom": "noov aaa",
-            "email": tatandraza@gmail.com,
-            num_telephone:0342220215,
+         "nom":tantandraza,
+        "prenom": "noov aaa",
+        "email": tatandraza@gmail.com,
+        "num_telephone":0342220215,
+        "date_de_naissance": "2024-10-10"
     }
     */
     @PostMapping("/save")
@@ -92,8 +93,8 @@ url (example) : .../client/CLT_2
             "nom":tantandraza,
             "prenom": "noov aaa",
             "email": tatandraza@gmail.com,
-            num_telephone:0342220215,
-
+             "num_telephone":0342220215,
+            "date_de_naissance": "2024-10-10"
 }
   */
     @PutMapping("/update")

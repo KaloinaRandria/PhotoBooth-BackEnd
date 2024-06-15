@@ -11,7 +11,7 @@ public class ClientService extends Service {
     public  ClientService() {super();}
 
     public List<Client> getAllClient() throws Exception {
-        return  this.getAll(Client.class);
+        return this.getAll(Client.class);
     }
 
     public Optional<Client> getClientById(String id) throws  Exception{
