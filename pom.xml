@@ -37,10 +37,12 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 		<dependency>
-            <groupId>org.entityframework</groupId>
-            <artifactId>GenericEntity</artifactId>
+			<groupId>org.entityframework</groupId>
+			<artifactId>fast_api</artifactId>
 			<version>1.0</version>
-        </dependency>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/fast_api.jar</systemPath>
+		</dependency>
     </dependencies>
 
 	<build>
@@ -53,4 +55,8 @@
 	</build>
 
 </project>
+
+<!-- mvn install:install-file -Dfile=lib/fast_api.jar -DgroupId=org.entityframework -DartifactId=fast_api -Dversion=1.0 -Dpackaging=jar -->
+
+
 

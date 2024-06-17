@@ -2,6 +2,7 @@ package org.photobooth.restapi.controller;
 
 import org.entityframework.dev.ApiResponse;
 import org.entityframework.dev.Metric;
+import org.photobooth.restapi.http.data.MaterielDataList;
 import org.photobooth.restapi.model.Theme;
 import org.photobooth.restapi.service.ThemeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,21 +72,22 @@ public class ThemeController {
     url : .../theme/save
     body (example) :
     Require : FormData
-    Part 1 : file , data : ilay sary , accept : image/*
+    Part 1 : image , data : ilay sary , accept : image/*
     Part 2 : data , data :
+    Part 3 : materiel , materiel :
      */
     @PostMapping("/save")
     public ResponseEntity<ApiResponse> form(
-            @RequestPart("file") MultipartFile file,
-            @RequestPart("data") Theme theme) throws IllegalAccessException, SQLException {
+            @RequestPart("image") MultipartFile file,
+            @RequestPart("data") Theme theme,
+            @RequestPart("materiel") MaterielDataList mdl) throws IllegalAccessException, SQLException {
 
 
-        Metric.print(theme);
         if (file.isEmpty()) {
             return ResponseEntity.internalServerError().body(new ApiResponse(false, null, "Empty file"));
         }
         try (ThemeService themeService = new ThemeService()) {
-            themeService.save(file, theme, applicationContext);
+            themeService.save(file, theme, mdl, applicationContext);
             ApiResponse response = new ApiResponse(true, theme, "done");
             logger.info("new Theme inserted");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);

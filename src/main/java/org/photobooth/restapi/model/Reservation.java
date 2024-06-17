@@ -1,6 +1,7 @@
 package org.photobooth.restapi.model;
 
 
+import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
 
 import java.sql.Date;
@@ -9,6 +10,7 @@ import java.sql.Timestamp;
 @Table(name = "reservation")
 public class Reservation {
 
+    @Primary(isSequence = true, sequenceName = "reservation_seq", prefixe = "Res_")
    private String id_reservation;
    private Date date_reservation;
    private Date date_reservee;
