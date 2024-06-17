@@ -28,7 +28,7 @@ public class ClientController {
     public ResponseEntity<ApiResponse> getAllClient(){
         try (ClientService clientService = new ClientService()) {
             List<Client> clients = clientService.getAllClient();
-            ApiResponse apiResponse = new ApiResponse(true, clients, null);
+            ApiResponse apiResponse = new ApiResponse(true,clients, null);
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
             logger.severe(e.getMessage());
@@ -59,16 +59,15 @@ url (example) : .../client/CLT_2
         }
     }
 
-    /*desc : mi_inserte materiel vaovao anaty base de donne
+    /*desc : mi_inserte client vaovao anaty base de donne
     method : post
     url : .../client/save
     body (example) :
     {
-         "nom":tantandraza,
-        "prenom": "noov aaa",
-        "email": tatandraza@gmail.com,
-        "num_telephone":0342220215,
-        "date_de_naissance": "2024-10-10"
+             "nom":tantandraza,
+            "prenom": "noov aaa",
+            "email": tatandraza@gmail.com,
+            num_telephone:0342220215,
     }
     */
     @PostMapping("/save")
@@ -93,8 +92,8 @@ url (example) : .../client/CLT_2
             "nom":tantandraza,
             "prenom": "noov aaa",
             "email": tatandraza@gmail.com,
-             "num_telephone":0342220215,
-            "date_de_naissance": "2024-10-10"
+            num_telephone:0342220215,
+
 }
   */
     @PutMapping("/update")
