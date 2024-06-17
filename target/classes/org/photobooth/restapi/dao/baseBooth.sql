@@ -167,3 +167,6 @@
         date_fin timestamp not null,
         montant_entrant decimal(10,2) not null
     );
+
+    /* vue  : */
+    CREATE OR REPLACE VIEW v_theme_worth AS (SELECT SUM(mt.quantite * m.prix) as worth, t.id_theme FROM theme t LEFT JOIN materiel_theme mt ON t.id_theme = mt.id_theme JOIN materiel m ON mt.id_materiel = m.id_materiel group by t.id_theme);

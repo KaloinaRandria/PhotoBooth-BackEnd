@@ -22,6 +22,8 @@ public class Theme {
     private String description;
     @Col(isTransient = true)
     private List<ImageTheme> imageThemes;
+    @Col(isTransient = true)
+    private double worth;
 
     public Theme() {
 
@@ -90,4 +92,14 @@ public class Theme {
     public void setImageThemes(List<ImageTheme> imageThemes) {
         this.imageThemes = imageThemes;
     }
+
+    public double getWorth() {
+        return worth;
+    }
+
+    public void setWorth(double worth) {
+        this.worth = worth;
+    }
+
+    
 }
