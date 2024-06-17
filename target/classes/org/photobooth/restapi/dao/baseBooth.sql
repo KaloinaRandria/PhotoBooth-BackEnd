@@ -125,7 +125,7 @@
         prenom varchar(250) not null,
         email varchar(250) not null unique,
         num_telephone varchar(250) not null unique,
-        date_de_naissance date not null
+        date_reservation timestamp not null 
     );
 
     create table image_client(
