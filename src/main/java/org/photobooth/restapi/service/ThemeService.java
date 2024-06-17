@@ -1,6 +1,7 @@
 package org.photobooth.restapi.service;
 
 import org.entityframework.error.EntityNotFoundException;
+import org.entityframework.tools.RowResult;
 import org.photobooth.restapi.http.data.MaterielData;
 import org.photobooth.restapi.http.data.MaterielDataList;
 import org.photobooth.restapi.model.Theme;
@@ -10,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
@@ -24,8 +26,18 @@ public class ThemeService extends Service {
         List<Theme> themes = getNgContext().findAll(Theme.class);
         for (Theme theme : themes) {
             theme.setImageThemes(getImageTheme(theme.getId_theme()));
+            theme.setWorth(getThemeWorth(theme.getId_theme()));
         }
         return themes;
+    }
+
+    private double getThemeWorth(String idTheme) throws Exception {
+        RowResult result = getNgContext().execute("SELECT * FROM v_theme_worth WHERE id_theme = ?", idTheme);
+        if (result.next()) {
+            BigDecimal bd = (BigDecimal) result.get("worth");
+            return bd.doubleValue();
+        }
+        return 0.0;
     }
 
     public String save(MultipartFile file , Theme theme, MaterielDataList materielDataList,  ApplicationContext applicationContext) throws Exception {
