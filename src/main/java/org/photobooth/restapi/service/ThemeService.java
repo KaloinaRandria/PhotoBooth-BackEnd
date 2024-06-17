@@ -1,7 +1,8 @@
 package org.photobooth.restapi.service;
 
 import org.entityframework.error.EntityNotFoundException;
-import org.photobooth.restapi.model.Role;
+import org.photobooth.restapi.http.data.MaterielData;
+import org.photobooth.restapi.http.data.MaterielDataList;
 import org.photobooth.restapi.model.Theme;
 import org.photobooth.restapi.model.img.ImageTheme;
 import org.photobooth.restapi.util.AppProperties;
@@ -27,7 +28,7 @@ public class ThemeService extends Service {
         return themes;
     }
 
-    public String save(MultipartFile file , Theme theme, ApplicationContext applicationContext) throws Exception {
+    public String save(MultipartFile file , Theme theme, MaterielDataList materielDataList,  ApplicationContext applicationContext) throws Exception {
         try {
             getNgContext().setAutoCommit(false);
             long millis = System.currentTimeMillis();
@@ -48,11 +49,20 @@ public class ThemeService extends Service {
             imageTheme.setImage_url(root);
 
             getNgContext().save(imageTheme);
+
+            for(MaterielData md : materielDataList.getMaterielDataList()) {
+                md.setId_theme(idTheme);
+                getNgContext().save(md);
+                getNgContext().executeUpdate("update materiel set quantite = ? where id_materiel = ?", md.getReste(), md.getId_materiel());
+            }
+
             getNgContext().commit();
             getNgContext().setAutoCommit(true);
             return idTheme;
         } catch (Exception e) {
             getNgContext().rollBack();
+            getNgContext().commit();
+            getNgContext().setAutoCommit(true);
             throw e;
         }
     }
