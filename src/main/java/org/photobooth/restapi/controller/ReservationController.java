@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("/rservation")
+@RequestMapping("/reservation")
 public class ReservationController {
     @Autowired
     private ApplicationContext applicationContext;
@@ -42,10 +42,10 @@ public class ReservationController {
 
     /*desc : get by id
 method : get
-url (example) : .../reservation/CLT_2
+url (example) : .../reservation/Res_2
 */
     @GetMapping("/{reservationId}")
-    public ResponseEntity<ApiResponse> getClientById(@PathVariable String reservationId) {
+    public ResponseEntity<ApiResponse> getReservationById(@PathVariable String reservationId) {
         try (ReservationService reservationService = new ReservationService()) {
             Optional<Reservation> reservationOptional = reservationService.getReservationById(reservationId);
             if (reservationOptional.isPresent()){
@@ -118,10 +118,10 @@ body (example) :
     }
     /*desc : delete
     method : delete
-    url (example) : .../reservation/delete/CLT_2
+    url (example) : .../reservation/delete/Res_2
     */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse> deleteClient(@PathVariable String id) {
+    public ResponseEntity<ApiResponse> deleteReservation(@PathVariable String id) {
         try (ReservationService reservationService = new ReservationService()) {
             reservationService.delete(id);
             ApiResponse response = new ApiResponse(true,id, "done");
