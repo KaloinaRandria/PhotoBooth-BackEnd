@@ -68,6 +68,7 @@ url (example) : .../client/CLT_2
             "prenom": "noov aaa",
             "email": tatandraza@gmail.com,
             num_telephone:0342220215,
+            "date_de-naissance"
     }
     */
     @PostMapping("/save")
@@ -93,6 +94,7 @@ url (example) : .../client/CLT_2
             "prenom": "noov aaa",
             "email": tatandraza@gmail.com,
             num_telephone:0342220215,
+            "date_de-naissance"
 
 }
   */
