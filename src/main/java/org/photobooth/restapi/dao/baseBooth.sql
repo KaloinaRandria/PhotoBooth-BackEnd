@@ -89,7 +89,8 @@
         intitule varchar(250) not null unique,
         quantite int not null,
         prix decimal(10,2) not null,
-        image_url varchar(250)
+        image_url varchar(250),
+        prix_achat decimal(10,2) not null
     );
 
     create table materiel_theme(
@@ -170,3 +171,4 @@
 
     /* vue  : */
     CREATE OR REPLACE VIEW v_theme_worth AS (SELECT SUM(mt.quantite * m.prix) as worth, t.id_theme FROM theme t LEFT JOIN materiel_theme mt ON t.id_theme = mt.id_theme JOIN materiel m ON mt.id_materiel = m.id_materiel group by t.id_theme);
+    CREATE OR REPLACE VIEW v_used_materiel AS (SELECT m.intitule, SUM(mt.quantite) FROM materiel m LEFT JOIN materiel_theme mt ON m.id_materiel = mt.id_materiel GROUP BY m.id_materiel);

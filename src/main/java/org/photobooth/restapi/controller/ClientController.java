@@ -115,6 +115,7 @@ url (example) : .../client/CLT_2
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse> deleteClient(@PathVariable String id) {
         try (ClientService clientService = new ClientService()) {
+            System.out.println("id = " + id);
             clientService.delete(id);
             ApiResponse response = new ApiResponse(true,id, "done");
             return ResponseEntity.ok(response);

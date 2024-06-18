@@ -1,7 +1,9 @@
 package org.photobooth.restapi.controller;
 
 import org.entityframework.dev.ApiResponse;
+import org.photobooth.restapi.http.data.MaterielAddData;
 import org.photobooth.restapi.model.Materiel;
+import org.photobooth.restapi.model.stat.AllTimeUsedMateriel;
 import org.photobooth.restapi.service.MaterielService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -29,6 +31,18 @@ public class MaterielController {
     public ResponseEntity<ApiResponse> getAllMateriel() {
         try (MaterielService materielService = new MaterielService()) {
             List<Materiel> materiels = materielService.getAllMateriel();
+            ApiResponse apiResponse = new ApiResponse(true, materiels, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @GetMapping("/stat")
+    public ResponseEntity<ApiResponse> getStat() {
+        try (MaterielService materielService = new MaterielService()) {
+            AllTimeUsedMateriel materiels = materielService.getStat();
             ApiResponse apiResponse = new ApiResponse(true, materiels, null);
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
@@ -71,6 +85,7 @@ public class MaterielController {
         "quantite": 99,
         "intitule": "noov aaa",
         "prix": 99999.0,
+        "prix_achat": 123
     }
     */
     @PostMapping("/save")
@@ -79,6 +94,19 @@ public class MaterielController {
             String idMatCreated = materielService.save(materiel);
             ApiResponse response = new ApiResponse(true, materiel, "done");
             logger.info("new Materiel inserted");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<ApiResponse> addMateriel(@RequestBody MaterielAddData materiel) {
+        try (MaterielService materielService = new MaterielService()) {
+            materielService.add(materiel);
+            ApiResponse response = new ApiResponse(true, null, "done");
+            logger.info("new Materiel added");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             logger.severe(e.getMessage());
