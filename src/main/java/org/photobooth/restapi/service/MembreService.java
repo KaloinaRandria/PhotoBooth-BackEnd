@@ -5,6 +5,7 @@ import org.entityframework.error.EntityNotFoundException;
 import org.photobooth.restapi.model.Membre;
 import org.photobooth.restapi.model.Salaire;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +38,24 @@ public class MembreService extends Service{
     }
 
     public String insertMembre(Membre membre) throws Exception {
-        return (String) getNgContext().save(membre);
+        try {
+            getNgContext().setAutoCommit(false);
+            String saved = (String) getNgContext().save(membre);
+            Salaire sal = new Salaire();
+            sal.setId_membre(saved);
+            sal.setMontant(membre.getSalaire().getMontant());
+            sal.setDate_insertion(new Timestamp(System.currentTimeMillis()));
+            getNgContext().save(sal);
+
+            getNgContext().commit();
+            getNgContext().setAutoCommit(true);
+            return saved;
+        } catch (Exception e) {
+            getNgContext().rollBack();
+            getNgContext().commit();
+            getNgContext().setAutoCommit(true);
+            throw e;
+        }
     }
 
     public Optional<Membre> getMembreById(String id) throws Exception {
@@ -50,6 +68,21 @@ public class MembreService extends Service{
     }
 
     public void updateUser(Membre updatedMember) throws Exception {
-        getNgContext().update(updatedMember);
+        try {
+            getNgContext().setAutoCommit(false);
+
+            getNgContext().update(updatedMember);
+            Salaire sal = updatedMember.getSalaire();
+            sal.setDate_insertion(new Timestamp(System.currentTimeMillis()));
+            getNgContext().save(sal);
+
+            getNgContext().commit();
+            getNgContext().setAutoCommit(true);
+        } catch(Exception e) {
+            getNgContext().rollBack();
+            getNgContext().commit();
+            getNgContext().setAutoCommit(true);
+            throw e;
+        }
     }
 }

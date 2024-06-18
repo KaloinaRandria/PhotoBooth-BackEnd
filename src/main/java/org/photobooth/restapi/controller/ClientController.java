@@ -68,6 +68,7 @@ url (example) : .../client/CLT_2
             "prenom": "noov aaa",
             "email": tatandraza@gmail.com,
             num_telephone:0342220215,
+            "date_de-naissance"
     }
     */
     @PostMapping("/save")
@@ -93,6 +94,7 @@ url (example) : .../client/CLT_2
             "prenom": "noov aaa",
             "email": tatandraza@gmail.com,
             num_telephone:0342220215,
+            "date_de-naissance"
 
 }
   */
@@ -115,6 +117,7 @@ url (example) : .../client/CLT_2
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse> deleteClient(@PathVariable String id) {
         try (ClientService clientService = new ClientService()) {
+            System.out.println("id = " + id);
             clientService.delete(id);
             ApiResponse response = new ApiResponse(true,id, "done");
             return ResponseEntity.ok(response);

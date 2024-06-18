@@ -3,6 +3,7 @@ package org.photobooth.restapi.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.entityframework.dev.ApiResponse;
+import org.entityframework.dev.Metric;
 import org.photobooth.restapi.model.Membre;
 import org.photobooth.restapi.service.MembreService;
 import org.springframework.beans.factory.annotation.Autowired;

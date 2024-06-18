@@ -1,5 +1,6 @@
 package org.photobooth.restapi.model;
 
+import org.entityframework.tools.Col;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
 
@@ -11,6 +12,9 @@ public class Materiel {
     private String intitule;
     private double prix;
     private String image_url;
+    @Col(isTransient = true)
+    private int inUsed;
+    private double prix_achat;
 
     public Materiel() {}
 
@@ -52,5 +56,21 @@ public class Materiel {
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
+    }
+
+    public int getInUsed() {
+        return inUsed;
+    }
+
+    public void setInUsed(int inUsed) {
+        this.inUsed = inUsed;
+    }
+
+    public double getPrix_achat() {
+        return prix_achat;
+    }
+
+    public void setPrix_achat(double prix_achat) {
+        this.prix_achat = prix_achat;
     }
 }
