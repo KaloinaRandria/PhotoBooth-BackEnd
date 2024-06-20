@@ -1,6 +1,7 @@
 package org.photobooth.restapi.service;
 
 import org.entityframework.client.GenericEntity;
+import org.entityframework.dev.Metric;
 import org.entityframework.error.EntityNotFoundException;
 import org.photobooth.restapi.model.Membre;
 import org.photobooth.restapi.model.Salaire;
@@ -25,7 +26,8 @@ public class MembreService extends Service{
     }
 
     private void getAndSetMembreSalaire(Membre membre) throws Exception {
-        Salaire salaire = getNgContext().findExtreme(Salaire.class, "date_insertion", GenericEntity.MAX, "id_membre = '" + membre.getId_membre() + "'");
+        Salaire salaire = getNgContext().findExtreme(Salaire.class, "date_insertion", GenericEntity.MAX, "id_membre = '" + membre.getId_membre() + "'", "id_membre = '" + membre.getId_membre() + "'");
+        Metric.print(salaire);
         membre.setSalaire(salaire);
     }
 

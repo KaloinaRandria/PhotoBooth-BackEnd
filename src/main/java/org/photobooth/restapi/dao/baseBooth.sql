@@ -139,18 +139,20 @@
     create table reservation(
         id_reservation varchar(20) PRIMARY KEY ,
         date_reservation timestamp not null ,
-        date_reservee timestamp not null,
+        date_reservee date not null,
         id_client varchar(20) references client(id_client) not null,
         id_service varchar(20) references comp_service(id_comp_service) not null,
+        nb_personne INT not null,
         heure_debut timestamp not null,
         heure_fin timestamp not null,
-        prix decimal(10,2) not null
+        prix decimal(10,2) not null,
+        id_theme VARCHAR(20) references theme(id_theme) not null,
+        id_salle VARCHAR(20) references salle(id_salle) not null
     );
 
     create table reservation_detail(
         id_reservation_detail varchar(20) PRIMARY KEY ,
         id_resevation varchar(20) references reservation (id_reservation)  not null,
-        id_theme VARCHAR(20) references theme(id_theme),
         customDesc VARCHAR(250),
         custom BIT default false
     );
@@ -168,6 +170,18 @@
         date_fin timestamp not null,
         montant_entrant decimal(10,2) not null
     );
+
+    CREATE TABLE value_ranges (
+          id SERIAL PRIMARY KEY,
+          range_label VARCHAR(50) NOT NULL,
+          min_value INT,
+          max_value INT
+    );
+
+    INSERT INTO value_ranges (range_label, min_value, max_value) VALUES
+     ('less than 3', NULL, 3),
+     ('between 3 and 10', 3, 10),
+     ('more than 10', 10, NULL);
 
     /* vue  : */
     CREATE OR REPLACE VIEW v_theme_worth AS (SELECT SUM(mt.quantite * m.prix) as worth, t.id_theme FROM theme t LEFT JOIN materiel_theme mt ON t.id_theme = mt.id_theme JOIN materiel m ON mt.id_materiel = m.id_materiel group by t.id_theme);
