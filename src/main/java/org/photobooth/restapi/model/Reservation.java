@@ -1,6 +1,7 @@
 package org.photobooth.restapi.model;
 
 
+import org.entityframework.tools.Col;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
 
@@ -9,17 +10,23 @@ import java.sql.Timestamp;
 
 @Table(name = "reservation")
 public class Reservation {
-
-    @Primary(isSequence = true, sequenceName = "reservation_seq", prefixe = "Res_")
+   @Primary(isSequence = true, sequenceName = "reservation_seq", prefixe = "RES_")
    private String id_reservation;
    private Date date_reservation;
    private Date date_reservee;
-   private String id_client;
-   private String id_service;
+   @Col(name = "id-client", reference = "id_client")
+   private Client client;
+   @Col(name = "id_service", reference = "id_comp_service")
+   private ServComp service;
    private Timestamp heure_debut;
    private Timestamp heure_fin;
    private double prix;
+   @Col(name = "id_theme", reference = "id_theme")
+   private Theme theme;
+   @Col(name = "id_salle", reference = "id_salle")
+   private Salle salle;
 
+   public Reservation() {}
 
     public String getId_reservation() {
         return id_reservation;
@@ -45,20 +52,20 @@ public class Reservation {
         this.date_reservee = date_reservee;
     }
 
-    public String getId_client() {
-        return id_client;
+    public Client getClient() {
+        return client;
     }
 
-    public void setId_client(String id_client) {
-        this.id_client = id_client;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
-    public String getId_service() {
-        return id_service;
+    public ServComp getService() {
+        return service;
     }
 
-    public void setId_service(String id_service) {
-        this.id_service = id_service;
+    public void setService(ServComp service) {
+        this.service = service;
     }
 
     public Timestamp getHeure_debut() {
@@ -83,5 +90,21 @@ public class Reservation {
 
     public void setPrix(double prix) {
         this.prix = prix;
+    }
+
+    public Theme getTheme() {
+        return theme;
+    }
+
+    public void setTheme(Theme theme) {
+        this.theme = theme;
+    }
+
+    public Salle getSalle() {
+        return salle;
+    }
+
+    public void setSalle(Salle salle) {
+        this.salle = salle;
     }
 }

@@ -1,13 +1,20 @@
 package org.photobooth.restapi.service;
 
 import org.entityframework.error.EntityNotFoundException;
+import org.entityframework.tools.RowResult;
+import org.photobooth.restapi.http.data.ReservationInterval;
 import org.photobooth.restapi.model.Client;
 import org.photobooth.restapi.model.Reservation;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
 public class ReservationService extends Service {
+
+    public ReservationService() {
+        super();
+    }
     public List<Reservation> getAllReservation() throws Exception {
         return  this.getAll(Reservation.class);
     }
@@ -31,5 +38,17 @@ public class ReservationService extends Service {
         getNgContext().delete(Client.class, id);
     }
 
+    public boolean isAvailable(ReservationInterval interval) throws Exception {
+        return isAvailable(interval.getDebut(), interval.getFin());
+    }
 
+    private boolean isAvailable(Timestamp start, Timestamp end) throws Exception {
+        String query = "SELECT COUNT(*) FROM reservation WHERE " +
+                "(heure_debut BETWEEN ? AND ?) " +
+                "OR (heure_fin BETWEEN ? AND ?) " +
+                "OR (heure_debut <= ? AND heure_fin >= ?)";
+
+        RowResult rs = getNgContext().execute(query, start, end, start, end, start, end);
+        return rs.isEmpty();
+    }
 }
