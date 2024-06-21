@@ -1,5 +1,6 @@
 package org.photobooth.restapi.model;
 
+import org.entityframework.tools.Col;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
 
@@ -8,6 +9,7 @@ public class ServComp {
     @Primary(isSequence = true, sequenceName = "comp_service_seq", prefixe = "SERV_")
     private String id_comp_service;
     private String intitule;
+    @Col(isTransient = true)
     private double prix_unitaire;
 
     public ServComp() {}
