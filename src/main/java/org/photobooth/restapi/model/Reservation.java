@@ -12,9 +12,9 @@ import java.sql.Timestamp;
 public class Reservation {
    @Primary(isSequence = true, sequenceName = "reservation_seq", prefixe = "RES_")
    private String id_reservation;
-   private Date date_reservation;
+   private Timestamp date_reservation;
    private Date date_reservee;
-   @Col(name = "id-client", reference = "id_client")
+   @Col(name = "id_client", reference = "id_client")
    private Client client;
    @Col(name = "id_service", reference = "id_comp_service")
    private ServComp service;
@@ -25,6 +25,10 @@ public class Reservation {
    private Theme theme;
    @Col(name = "id_salle", reference = "id_salle")
    private Salle salle;
+   private int nb_personne;
+   private boolean photograph;
+   private boolean isConfirmed;
+   private boolean isValid;
 
    public Reservation() {}
 
@@ -36,11 +40,11 @@ public class Reservation {
         this.id_reservation = id_reservation;
     }
 
-    public Date getDate_reservation() {
+    public Timestamp getDate_reservation() {
         return date_reservation;
     }
 
-    public void setDate_reservation(Date date_reservation) {
+    public void setDate_reservation(Timestamp date_reservation) {
         this.date_reservation = date_reservation;
     }
 
@@ -106,5 +110,37 @@ public class Reservation {
 
     public void setSalle(Salle salle) {
         this.salle = salle;
+    }
+
+    public int getNb_personne() {
+        return nb_personne;
+    }
+
+    public void setNb_personne(int nb_personne) {
+        this.nb_personne = nb_personne;
+    }
+
+    public boolean isPhotograph() {
+        return photograph;
+    }
+
+    public void setPhotograph(boolean photograph) {
+        this.photograph = photograph;
+    }
+
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        isConfirmed = confirmed;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void setValid(boolean valid) {
+        isValid = valid;
     }
 }

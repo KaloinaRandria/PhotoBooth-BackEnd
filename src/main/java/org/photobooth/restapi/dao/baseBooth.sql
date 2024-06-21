@@ -110,13 +110,20 @@
     create table comp_service (
         id_comp_service varchar(20) PRIMARY KEY ,
         intitule varchar(250) not null unique,
-        prix_unitaire decimal(10,2) not null
     );
 
     create table tarif_comp_service(
         id_tarif_service varchar(20) PRIMARY KEY ,
         id_comp_service varchar(20) references comp_service(id_comp_service),
-        nombre int
+        id_value_ranges int not null,
+        prix decimal(10,2) not null
+    );
+
+    CREATE TABLE value_ranges (
+          id SERIAL PRIMARY KEY,
+          range_label VARCHAR(50) NOT NULL,
+          min_value INT,
+          max_value INT
     );
 
 
@@ -147,7 +154,10 @@
         heure_fin timestamp not null,
         prix decimal(10,2) not null,
         id_theme VARCHAR(20) references theme(id_theme) not null,
-        id_salle VARCHAR(20) references salle(id_salle) not null
+        id_salle VARCHAR(20) references salle(id_salle) not null,
+        photograph boolean not null,
+        isConfirmed boolean default false,
+        isValid boolean default true
     );
 
     create table reservation_detail(
@@ -166,22 +176,29 @@
     create table historique(
         id_historique varchar(20) PRIMARY KEY ,
         id_theme varchar(20),
+        date_action date not null,
         date_debut timestamp not null,
         date_fin timestamp not null,
         montant_entrant decimal(10,2) not null
     );
 
-    CREATE TABLE value_ranges (
-          id SERIAL PRIMARY KEY,
-          range_label VARCHAR(50) NOT NULL,
-          min_value INT,
-          max_value INT
-    );
+
 
     INSERT INTO value_ranges (range_label, min_value, max_value) VALUES
      ('less than 3', NULL, 3),
      ('between 3 and 10', 3, 10),
      ('more than 10', 10, NULL);
+
+    INSERT INTO comp_service VALUES ('S_1', 'album', 0);
+    INSERT INTO comp_service VALUES ('S_2', 'photo', 0);
+
+    INSERT INTO tarif_comp_service VALUES ('TCS_1', 'S_1', 1 , 100000);
+    INSERT INTO tarif_comp_service VALUES ('TCS_2', 'S_1', 2 , 300000);
+    INSERT INTO tarif_comp_service VALUES ('TCS_3', 'S_1', 3 , 500000);
+
+    INSERT INTO tarif_comp_service VALUES ('TCS_4', 'S_2', 1 , 80000);
+    INSERT INTO tarif_comp_service VALUES ('TCS_5', 'S_2', 2 , 150000);
+    INSERT INTO tarif_comp_service VALUES ('TCS_6', 'S_2', 3 , 400000);
 
     /* vue  : */
     CREATE OR REPLACE VIEW v_theme_worth AS (SELECT SUM(mt.quantite * m.prix) as worth, t.id_theme FROM theme t LEFT JOIN materiel_theme mt ON t.id_theme = mt.id_theme JOIN materiel m ON mt.id_materiel = m.id_materiel group by t.id_theme);
