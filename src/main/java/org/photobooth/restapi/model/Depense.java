@@ -14,6 +14,8 @@ public class Depense {
 
   private Date data_insertion;
 
+  public Depense() {}
+
     public int getIdDepense() {
         return idDepense;
     }

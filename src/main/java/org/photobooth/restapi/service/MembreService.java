@@ -26,7 +26,7 @@ public class MembreService extends Service{
     }
 
     private void getAndSetMembreSalaire(Membre membre) throws Exception {
-        Salaire salaire = getNgContext().findExtreme(Salaire.class, "date_insertion", GenericEntity.MAX, "id_membre = '" + membre.getId_membre() + "'");
+        Salaire salaire = getNgContext().findExtreme(Salaire.class, "date_insertion", GenericEntity.MAX, "id_membre = '" + membre.getId_membre() + "'" , "id_membre = '" + membre.getId_membre() + "'");
         Metric.print(salaire);
         membre.setSalaire(salaire);
     }
