@@ -110,6 +110,7 @@
     create table comp_service (
         id_comp_service varchar(20) PRIMARY KEY ,
         intitule varchar(250) not null unique,
+        icon varchar(50) not null
     );
 
     create table tarif_comp_service(
@@ -188,8 +189,6 @@
         date_fin timestamp not null,
         montant_entrant decimal(10,2) not null
     );
-
-
 
     INSERT INTO value_ranges (range_label, min_value, max_value) VALUES
      ('less than 3', NULL, 3),

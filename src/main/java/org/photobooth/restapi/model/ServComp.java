@@ -11,6 +11,7 @@ public class ServComp {
     private String intitule;
     @Col(isTransient = true)
     private double prix_unitaire;
+    private String icon;
 
     public ServComp() {}
 
@@ -36,5 +37,13 @@ public class ServComp {
 
     public void setPrix_unitaire(double prix_unitaire) {
         this.prix_unitaire = prix_unitaire;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
