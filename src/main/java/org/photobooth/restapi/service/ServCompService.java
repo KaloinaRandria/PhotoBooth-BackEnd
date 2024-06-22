@@ -1,5 +1,6 @@
 package org.photobooth.restapi.service;
 
+import org.entityframework.dev.Metric;
 import org.photobooth.restapi.http.data.ServiceData;
 import org.photobooth.restapi.http.data.ValueRangeData;
 import org.photobooth.restapi.model.ServComp;
@@ -32,9 +33,11 @@ public class ServCompService extends Service{
         try {
             getNgContext().setAutoCommit(false);
             ServComp serv = new ServComp();
+            serv.setColor(serviceData.getColor());
             serv.setPrix_unitaire(0.0);
             serv.setIcon(serviceData.getIcon());
             serv.setIntitule(serviceData.getLabel());
+            Metric.print(serv);
             String id_service = (String) getNgContext().save(serv);
 
             for (ValueRangeData valueRangeData : serviceData.getValueRange()) {

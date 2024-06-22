@@ -11,6 +11,7 @@ public class ServComp {
     private String intitule;
     private double prix_unitaire;
     private String icon;
+    private String color;
 
     public ServComp() {}
 
@@ -44,5 +45,13 @@ public class ServComp {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

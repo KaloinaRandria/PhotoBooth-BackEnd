@@ -21,7 +21,6 @@ public class StatService extends Service {
         for (Object object : chiffreStat.getData()) {
             double ch = ((BigDecimal) object).doubleValue();
             double de = ((BigDecimal) depenseStat.getData().get(i)).doubleValue();
-            System.out.println("Chi = " + ch + " - " + de);
             double be = ch - de;
             beneficeStat.add(be);
             i++;

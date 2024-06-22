@@ -110,7 +110,8 @@
     create table comp_service (
         id_comp_service varchar(20) PRIMARY KEY ,
         intitule varchar(250) not null unique,
-        icon varchar(50) not null
+        icon varchar(50) not null,
+        color varchar(15) not null
     );
 
     create table tarif_comp_service(
