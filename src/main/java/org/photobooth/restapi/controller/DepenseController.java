@@ -4,20 +4,21 @@ import org.entityframework.dev.ApiResponse;
 import org.photobooth.restapi.model.Client;
 import org.photobooth.restapi.model.Depense;
 import org.photobooth.restapi.model.Membre;
+import org.photobooth.restapi.model.stat.AllTimeUsedMateriel;
+import org.photobooth.restapi.model.stat.DepenseStat;
 import org.photobooth.restapi.service.ClientService;
 import org.photobooth.restapi.service.DepenseService;
+import org.photobooth.restapi.service.MaterielService;
 import org.photobooth.restapi.service.MembreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
-@RestController("/depense")
+@RestController
+@RequestMapping("/depense")
 public class DepenseController {
     @Autowired
     private ApplicationContext applicationContext;
@@ -38,9 +39,9 @@ public class DepenseController {
     @PostMapping("/save")
     public ResponseEntity<ApiResponse> createDepense(@RequestBody Depense dep) {
         try (DepenseService depenseService = new DepenseService()) {
-            String idDepCreated = depenseService.save(dep);
-            ApiResponse response = new ApiResponse(true,idDepCreated, "done");
-            logger.info("new Client inserted");
+            depenseService.save(dep);
+            ApiResponse response = new ApiResponse(true,"okay", "done");
+            logger.info("new Depense inserted");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             logger.severe(e.getMessage());
@@ -65,6 +66,18 @@ public class DepenseController {
             depenseService.update(depense);
             ApiResponse response = new ApiResponse(true,depense,"done");
             return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @GetMapping("/stat/{annee}")
+    public ResponseEntity<ApiResponse> getStat(@PathVariable int annee) {
+        try (DepenseService depenseService = new DepenseService()) {
+            DepenseStat stat = depenseService.getDepense(annee);
+            ApiResponse apiResponse = new ApiResponse(true, stat, null);
+            return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
             logger.severe(e.getMessage());
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));

@@ -12,7 +12,7 @@ public class Depense {
    private double montant;
    private String libele;
 
-  private Date data_insertion;
+  private Date date_insertion;
 
   public Depense() {}
 
@@ -40,11 +40,11 @@ public class Depense {
         this.libele = libele;
     }
 
-    public Date getData_insertion() {
-        return data_insertion;
+    public Date getDate_insertion() {
+        return date_insertion;
     }
 
-    public void setData_insertion(Date data_insertion) {
-        this.data_insertion = data_insertion;
+    public void setDate_insertion(Date date_insertion) {
+        this.date_insertion = date_insertion;
     }
 }

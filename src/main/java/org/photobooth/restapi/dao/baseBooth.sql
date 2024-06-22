@@ -209,3 +209,72 @@
     /* vue  : */
     CREATE OR REPLACE VIEW v_theme_worth AS (SELECT SUM(mt.quantite * m.prix) as worth, t.id_theme FROM theme t LEFT JOIN materiel_theme mt ON t.id_theme = mt.id_theme JOIN materiel m ON mt.id_materiel = m.id_materiel group by t.id_theme);
     CREATE OR REPLACE VIEW v_used_materiel AS (SELECT m.intitule, SUM(mt.quantite) FROM materiel m LEFT JOIN materiel_theme mt ON m.id_materiel = mt.id_materiel GROUP BY m.id_materiel);
+
+
+    create table historique(
+           id_historique varchar(20) PRIMARY KEY ,
+           id_theme varchar(20),
+           date_action date not null,
+           date_debut timestamp not null,
+           date_fin timestamp not null,
+           montant_entrant decimal(10,2) not null
+    );
+
+    create table depense (
+                             id SERIAL PRIMARY KEY ,
+                             montant decimal(10,2) not null,
+                             libele varchar(50) not null,
+                             date_insertion date not null
+    );
+
+creer moi une fonction
+
+    SELECT
+        EXTRACT(MONTH FROM date_insertion) AS mois,
+        SUM(montant) AS total_depense
+    FROM
+        depense
+    WHERE
+        EXTRACT(YEAR FROM date_insertion) = 2024
+    GROUP BY
+        EXTRACT(MONTH FROM date_insertion)
+    ORDER BY
+        mois;
+
+    /*WITH all_months AS (
+        SELECT generate_series(1, 12) AS mois
+    )
+    SELECT
+        all_months.mois,
+        COALESCE(SUM(depense.montant), 0) AS total_depense
+    FROM
+        all_months
+            LEFT JOIN
+        depense ON EXTRACT(MONTH FROM depense.date_insertion) = all_months.mois
+            AND EXTRACT(YEAR FROM depense.date_insertion) = 2024
+    GROUP BY
+        all_months.mois
+    ORDER BY
+        all_months.mois;*/
+
+    SELECT all_months.mois, COALESCE(SUM(depense.montant), 0) AS total_depense FROM generate_series(1, 12) AS all_months(mois) LEFT JOIN depense ON EXTRACT(MONTH FROM depense.date_insertion) = all_months.mois AND EXTRACT(YEAR FROM depense.date_insertion) = 2024 GROUP BY all_months.mois ORDER BY all_months.mois;
+
+
+
+    /*WITH all_months AS (
+        SELECT generate_series(1, 12) AS mois
+    )
+    SELECT
+        all_months.mois,
+        COALESCE(SUM(historique.montant_entrant), 0) AS total_depense
+    FROM
+        all_months
+            LEFT JOIN
+        historique ON EXTRACT(MONTH FROM historique.date_action) = all_months.mois
+            AND EXTRACT(YEAR FROM historique.date_action) = 2024
+    GROUP BY
+        all_months.mois
+    ORDER BY
+        all_months.mois;*/
+    SELECT all_months.mois, COALESCE(SUM(historique.montant_entrant), 0) AS total_depense FROM generate_series(1, 12) AS all_months(mois) LEFT JOIN historique ON EXTRACT(MONTH FROM historique.date_action) = all_months.mois AND EXTRACT(YEAR FROM historique.date_action) = 2024 GROUP BY all_months.mois ORDER BY all_months.mois;
+
