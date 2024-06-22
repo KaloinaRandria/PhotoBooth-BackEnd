@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("/rservation")
+@RequestMapping("/reservation")
 public class ReservationController {
     @Autowired
     private ApplicationContext applicationContext;
