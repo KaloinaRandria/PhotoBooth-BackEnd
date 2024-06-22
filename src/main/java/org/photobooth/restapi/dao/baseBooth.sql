@@ -173,6 +173,13 @@
         id_materiel varchar(20) references materiel(id_materiel)
     );
 
+    create table depense (
+        id SERIAL PRIMARY KEY ,
+        montant decimal(10,2) not null,
+        libele varchar(50) not null,
+        date_insertion date not null
+    );
+
     create table historique(
         id_historique varchar(20) PRIMARY KEY ,
         id_theme varchar(20),
