@@ -1,6 +1,7 @@
 package org.photobooth.restapi.controller;
 
 import org.entityframework.dev.ApiResponse;
+import org.photobooth.restapi.http.data.ServiceData;
 import org.photobooth.restapi.model.ServComp;
 import org.photobooth.restapi.service.ServCompService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,19 @@ public class ServCompController {
             servCompService.deleteService(idService);
             ApiResponse response = new ApiResponse(true, null, "done");
             return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @PostMapping("/new")
+    public ResponseEntity<ApiResponse> createService(@RequestBody ServiceData service) {
+        try (ServCompService servCompService = new ServCompService()) {
+            servCompService.newService(service);
+            ApiResponse response = new ApiResponse(true, "vita", "done");
+            logger.info("new Service inserted");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             logger.severe(e.getMessage());
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));

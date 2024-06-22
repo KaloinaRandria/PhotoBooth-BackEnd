@@ -22,6 +22,7 @@ public class ValueRangeController {
     private ApplicationContext applicationContext;
     private static final Logger logger = Logger.getLogger(ValueRangeController.class.getName());
 
+    /* url : tarif/all */
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllValue() {
         try (ValueRangeService valueRangeService = new ValueRangeService()) {
