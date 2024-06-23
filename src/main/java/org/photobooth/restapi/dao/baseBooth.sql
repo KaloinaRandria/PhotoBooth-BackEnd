@@ -211,6 +211,46 @@
     CREATE OR REPLACE VIEW v_theme_worth AS (SELECT SUM(mt.quantite * m.prix) as worth, t.id_theme FROM theme t LEFT JOIN materiel_theme mt ON t.id_theme = mt.id_theme JOIN materiel m ON mt.id_materiel = m.id_materiel group by t.id_theme);
     CREATE OR REPLACE VIEW v_used_materiel AS (SELECT m.intitule, SUM(mt.quantite) FROM materiel m LEFT JOIN materiel_theme mt ON m.id_materiel = mt.id_materiel GROUP BY m.id_materiel);
 
+    CREATE VIEW v_service_stat_today AS
+    SELECT
+        cs.color AS color,
+        cs.intitule AS service_intitule,
+        COALESCE(SUM(r.prix), 0) AS total_prix
+    FROM
+        comp_service cs
+            LEFT JOIN
+        reservation r ON r.id_service = cs.id_comp_service AND DATE(r.date_reservee) = CURRENT_DATE
+            GROUP BY
+            cs.intitule , cs.color;
+
+    CREATE OR REPLACE VIEW v_service_stat_last_30_days AS
+    SELECT
+        cs.color AS color,
+        cs.intitule AS service_intitule,
+        COALESCE(SUM(r.prix), 0) AS total_prix
+    FROM
+        comp_service cs
+            LEFT JOIN
+        reservation r ON r.id_service = cs.id_comp_service AND r.date_reservee >= CURRENT_DATE - INTERVAL '30 days'
+            GROUP BY
+            cs.intitule, cs.color;
+
+    CREATE VIEW v_service_stat_this_year AS
+    SELECT
+        cs.color AS color,
+        cs.intitule AS service_intitule,
+        COALESCE(SUM(r.prix), 0) AS total_prix
+    FROM
+        comp_service cs
+            LEFT JOIN
+        reservation r ON r.id_service = cs.id_comp_service
+            AND DATE_PART('year', r.date_reservee) = DATE_PART('year', CURRENT_DATE)
+    GROUP BY
+        cs.intitule , cs.color;
+
+
+
+
 
     create table historique(
            id_historique varchar(20) PRIMARY KEY ,
@@ -279,3 +319,10 @@ creer moi une fonction
         all_months.mois;*/
     SELECT all_months.mois, COALESCE(SUM(historique.montant_entrant), 0) AS total_depense FROM generate_series(1, 12) AS all_months(mois) LEFT JOIN historique ON EXTRACT(MONTH FROM historique.date_action) = all_months.mois AND EXTRACT(YEAR FROM historique.date_action) = 2024 GROUP BY all_months.mois ORDER BY all_months.mois;
 
+
+    /* resa par mois selon une annee donne */
+    WITH months AS (SELECT generate_series(1, 12) AS mois), reservations_per_month AS (SELECT EXTRACT(MONTH FROM r.date_reservee) AS mois, COUNT(r.id_reservation) AS nombre FROM reservation r WHERE EXTRACT(YEAR FROM r.date_reservee) = 2024 GROUP BY EXTRACT(MONTH FROM r.date_reservee)) SELECT m.mois AS mois, COALESCE(r.nombre, 0) AS nombre FROM months m LEFT JOIN reservations_per_month r ON m.mois = r.mois ORDER BY m.mois;
+
+    WITH months AS (SELECT generate_series(1, 12) AS mois),
+         reservations_status AS (SELECT EXTRACT(MONTH FROM r.date_reservee) AS mois, COUNT(*) AS total_reservations, SUM(CASE WHEN r.isValid = false THEN 1 ELSE 0 END) AS reservations_annulees, SUM(CASE WHEN r.isValid = true AND r.isConfirmed = true THEN 1 ELSE 0 END) AS reservations_confirmees, SUM(CASE WHEN r.isValid = true AND r.isConfirmed = false THEN 1 ELSE 0 END) AS reservations_en_attente FROM reservation r WHERE EXTRACT(YEAR FROM r.date_reservee) = 2024 GROUP BY EXTRACT(MONTH FROM r.date_reservee))
+    SELECT m.mois AS mois, COALESCE(rs.total_reservations, 0) AS total_reservations, COALESCE(rs.reservations_annulees, 0) AS reservations_annulees, COALESCE(rs.reservations_confirmees, 0) AS reservations_confirmees, COALESCE(rs.reservations_en_attente, 0) AS reservations_en_attente FROM months m LEFT JOIN reservations_status rs ON m.mois = rs.mois ORDER BY m.mois;

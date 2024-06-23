@@ -2,9 +2,11 @@ package org.photobooth.restapi.model;
 
 import org.entityframework.tools.Col;
 import org.entityframework.tools.Primary;
+import org.entityframework.tools.Table;
 
 import java.sql.Date;
 
+@Table(name = "depense")
 public class Depense {
    @Primary(auto = true)
    @Col(name = "id")
