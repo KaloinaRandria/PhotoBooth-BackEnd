@@ -3,8 +3,10 @@ package org.photobooth.restapi.controller;
 import org.entityframework.dev.ApiResponse;
 import org.entityframework.dev.GenericObject;
 import org.photobooth.restapi.model.Client;
+import org.photobooth.restapi.model.stat.AllTimeThemeStat;
 import org.photobooth.restapi.service.ClientService;
 import org.photobooth.restapi.service.StatService;
+import org.photobooth.restapi.service.ThemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,20 @@ public class StatController {
             ApiResponse apiResponse = new ApiResponse(true,data, null);
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @GetMapping("/theme/{id}")
+    public ResponseEntity<ApiResponse> getThemeStat(@PathVariable String id){
+        try (ThemeService themeService = new ThemeService()) {
+            AllTimeThemeStat data = themeService.getStat(id);
+            ApiResponse apiResponse = new ApiResponse(true,data, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
             logger.severe(e.getMessage());
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
         }

@@ -3,12 +3,21 @@ package org.photobooth.restapi.model.stat;
 import org.entityframework.client.GenericEntity;
 import org.entityframework.tools.RowResult;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DepenseStat {
     private int annee;
     private List<Object> data;
+
+    public List<Double> doubleData() {
+        List<Double> doubleList = new ArrayList<>();
+        for (Object o : data) {
+            doubleList.add(((BigDecimal) o).doubleValue());
+        }
+        return doubleList;
+    }
 
     public DepenseStat() {}
 
