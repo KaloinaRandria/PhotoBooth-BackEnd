@@ -9,9 +9,9 @@ public class ServComp {
     @Primary(isSequence = true, sequenceName = "comp_service_seq", prefixe = "SERV_")
     private String id_comp_service;
     private String intitule;
-    @Col(isTransient = true)
     private double prix_unitaire;
     private String icon;
+    private String color;
 
     public ServComp() {}
 
@@ -45,5 +45,13 @@ public class ServComp {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }

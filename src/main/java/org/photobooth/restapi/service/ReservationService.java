@@ -22,7 +22,7 @@ public class ReservationService extends Service {
         super();
     }
     public List<Reservation> getAllReservation() throws Exception {
-        return getNgContext().findWhere(Reservation.class, "isValid = ?", true);
+        return getNgContext().findWhereArgs(Reservation.class, "isValid = ?", true);
     }
     public Optional<Reservation> getReservationById(String id) throws  Exception{
         try {

@@ -1,6 +1,7 @@
 package org.photobooth.restapi.controller;
 
 import org.entityframework.dev.ApiResponse;
+import org.entityframework.dev.Metric;
 import org.photobooth.restapi.http.data.ServiceData;
 import org.photobooth.restapi.model.ServComp;
 import org.photobooth.restapi.service.ServCompService;

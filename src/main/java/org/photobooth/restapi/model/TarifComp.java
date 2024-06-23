@@ -6,7 +6,7 @@ import org.entityframework.tools.Table;
 
 @Table(name = "tarif_comp_service")
 public class TarifComp {
-    @Primary(isSequence = true, sequenceName = "tarif_comp_service_seq", prefixe = "TCS_")
+    @Primary(isSequence = true, sequenceName = "tarif_comp_service_seq", prefixe = "TCSE_")
     private String id_tarif_service;
     private String id_comp_service;
     private int id_value_ranges;

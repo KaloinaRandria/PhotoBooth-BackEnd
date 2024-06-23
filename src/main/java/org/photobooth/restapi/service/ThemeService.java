@@ -1,11 +1,14 @@
 package org.photobooth.restapi.service;
 
+import org.entityframework.dev.Calculator;
 import org.entityframework.error.EntityNotFoundException;
 import org.entityframework.tools.RowResult;
 import org.photobooth.restapi.http.data.MaterielData;
 import org.photobooth.restapi.http.data.MaterielDataList;
+import org.photobooth.restapi.model.ServComp;
 import org.photobooth.restapi.model.Theme;
 import org.photobooth.restapi.model.img.ImageTheme;
+import org.photobooth.restapi.model.stat.AllTimeThemeStat;
 import org.photobooth.restapi.util.AppProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -101,5 +105,45 @@ public class ThemeService extends Service {
         } catch (EntityNotFoundException e) {
             return Optional.empty();
         }
+    }
+
+    public AllTimeThemeStat getStat(String idTheme) throws Exception {
+        List<ServComp> servComps = getNgContext().findAll(ServComp.class);
+        Theme theme = getNgContext().findById(idTheme, Theme.class);
+
+        List<String> labels = new ArrayList<>();
+        List<Object> data = new ArrayList<>();
+        List<String> colors = new ArrayList<>();
+        for (ServComp servComp : servComps) {
+            labels.add(servComp.getIntitule());
+
+            String query = "SELECT COUNT(*) as isa from reservation where id_service = ? and id_theme = ? and isConfirmed = ?";
+            RowResult rs = getNgContext().execute(query, servComp.getId_comp_service(), theme.getId_theme(), true);
+            if(rs.next()) {
+                data.add(rs.get(1));
+            }
+            colors.add(servComp.getColor());
+        }
+
+        AllTimeThemeStat allTimeThemeStat = new AllTimeThemeStat();
+        allTimeThemeStat.setLabels(labels);
+        allTimeThemeStat.setData(data);
+        allTimeThemeStat.setColors(colors);
+
+        String query = "SELECT SUM(prix) as somme from reservation where id_theme = ? and isConfirmed = ?";
+        RowResult rs = getNgContext().execute(query, theme.getId_theme(), true);
+        if (rs.next()) {
+            allTimeThemeStat.setGain(rs.get(1));
+        } else {
+            allTimeThemeStat.setGain(0);
+        }
+
+        long nb = 0;
+        for (Object o : data) {
+           nb = nb + (long) o;
+        }
+        allTimeThemeStat.setUsedCount(nb);
+
+        return allTimeThemeStat;
     }
 }

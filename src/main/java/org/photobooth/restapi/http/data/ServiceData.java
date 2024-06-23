@@ -5,6 +5,7 @@ import java.util.List;
 public class ServiceData {
     private String icon;
     private String label;
+    private String color;
 
     private List<ValueRangeData> valueRange;
 
@@ -30,5 +31,13 @@ public class ServiceData {
 
     public void setValueRange(List<ValueRangeData> valueRange) {
         this.valueRange = valueRange;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
