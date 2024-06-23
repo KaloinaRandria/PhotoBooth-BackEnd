@@ -5,6 +5,7 @@ import org.entityframework.error.EntityNotFoundException;
 import org.entityframework.tools.RowResult;
 import org.photobooth.restapi.http.data.MaterielData;
 import org.photobooth.restapi.http.data.MaterielDataList;
+import org.photobooth.restapi.model.Depense;
 import org.photobooth.restapi.model.ServComp;
 import org.photobooth.restapi.model.Theme;
 import org.photobooth.restapi.model.img.ImageTheme;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +73,14 @@ public class ThemeService extends Service {
                 getNgContext().save(md);
                 getNgContext().executeUpdate("update materiel set quantite = ? where id_materiel = ?", md.getReste(), md.getId_materiel());
             }
+
+            double worth = getThemeWorth(idTheme);
+
+            Depense depense = new Depense();
+            depense.setLibele("Achat Theme");
+            depense.setMontant(worth);
+            depense.setDate_insertion(new Date(new java.util.Date().getTime()));
+            getNgContext().save(depense);
 
             getNgContext().commit();
             getNgContext().setAutoCommit(true);
@@ -146,4 +156,5 @@ public class ThemeService extends Service {
 
         return allTimeThemeStat;
     }
+
 }
