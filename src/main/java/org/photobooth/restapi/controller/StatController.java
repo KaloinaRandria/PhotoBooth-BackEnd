@@ -4,6 +4,7 @@ import org.entityframework.dev.ApiResponse;
 import org.entityframework.dev.GenericObject;
 import org.photobooth.restapi.model.Client;
 import org.photobooth.restapi.model.stat.AllTimeThemeStat;
+import org.photobooth.restapi.model.stat.ClientStat;
 import org.photobooth.restapi.model.stat.ReservationStat;
 import org.photobooth.restapi.model.stat.ServiceStat;
 import org.photobooth.restapi.service.ClientService;
@@ -88,4 +89,32 @@ public class StatController {
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
         }
     }
+
+    @GetMapping("/client/{idClient}")
+    public ResponseEntity<ApiResponse> getResaStatYear(@PathVariable String idClient){
+        try (StatService statService = new StatService()) {
+            GenericObject data = statService.getAllTimeClientStat(idClient);
+            ApiResponse apiResponse = new ApiResponse(true,data, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @GetMapping("/client/top/{limit}")
+    public ResponseEntity<ApiResponse> getTopClient(@PathVariable int limit){
+        try (StatService statService = new StatService()) {
+            List<ClientStat> data = statService.getTopClient(limit);
+            ApiResponse apiResponse = new ApiResponse(true,data, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+
 }

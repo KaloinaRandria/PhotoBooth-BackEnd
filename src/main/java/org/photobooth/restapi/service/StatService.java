@@ -4,6 +4,7 @@ import org.entityframework.dev.Calculator;
 import org.entityframework.dev.GenericObject;
 import org.entityframework.dev.Metric;
 import org.entityframework.tools.RowResult;
+import org.photobooth.restapi.model.Client;
 import org.photobooth.restapi.model.Reservation;
 import org.photobooth.restapi.model.stat.*;
 
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.sql.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class StatService extends Service {
     public StatService() {super();}
@@ -218,5 +220,37 @@ public class StatService extends Service {
         genericObject.addAttribute("max_value", maxValue);
 
         return genericObject;
+    }
+
+    public GenericObject getAllTimeClientStat(String id_client) throws Exception {
+        String query = "SELECT * FROM v_client_stat where id_client = ?";
+        RowResult rs = getNgContext().execute(query, id_client);
+
+        GenericObject ge = new GenericObject();
+        if (rs.next()) {
+            ge.addAttribute("id_client", rs.get(1));
+            ge.addAttribute("client_name", rs.get(2));
+            ge.addAttribute("nb_reservation", rs.get(3));
+            ge.addAttribute("total_prix", rs.get(4));
+        }
+        return ge;
+    }
+
+    public List<ClientStat> getTopClient(int number) throws Exception {
+        String query = "SELECT * FROM v_client_stat order by nb_reservations desc limit ?";
+        RowResult rs = getNgContext().execute(query, number);
+
+        List<ClientStat> clientStats = new ArrayList<>();
+        while (rs.next()) {
+            ClientStat clientStat = new ClientStat();
+            Client client = getNgContext().findById((String) rs.get(1), Client.class);
+            clientStat.setClient(client);
+            BigDecimal pr = (BigDecimal) rs.get(4);
+            clientStat.setTotal_prix(pr.doubleValue());
+            Long nb = (Long) rs.get(3);
+            clientStat.setNb_reservations(nb.intValue());
+            clientStats.add(clientStat);
+        }
+        return clientStats;
     }
 }
