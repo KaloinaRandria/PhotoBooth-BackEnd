@@ -326,3 +326,19 @@ creer moi une fonction
     WITH months AS (SELECT generate_series(1, 12) AS mois),
          reservations_status AS (SELECT EXTRACT(MONTH FROM r.date_reservee) AS mois, COUNT(*) AS total_reservations, SUM(CASE WHEN r.isValid = false THEN 1 ELSE 0 END) AS reservations_annulees, SUM(CASE WHEN r.isValid = true AND r.isConfirmed = true THEN 1 ELSE 0 END) AS reservations_confirmees, SUM(CASE WHEN r.isValid = true AND r.isConfirmed = false THEN 1 ELSE 0 END) AS reservations_en_attente FROM reservation r WHERE EXTRACT(YEAR FROM r.date_reservee) = 2024 GROUP BY EXTRACT(MONTH FROM r.date_reservee))
     SELECT m.mois AS mois, COALESCE(rs.total_reservations, 0) AS total_reservations, COALESCE(rs.reservations_annulees, 0) AS reservations_annulees, COALESCE(rs.reservations_confirmees, 0) AS reservations_confirmees, COALESCE(rs.reservations_en_attente, 0) AS reservations_en_attente FROM months m LEFT JOIN reservations_status rs ON m.mois = rs.mois ORDER BY m.mois;
+
+
+    CREATE VIEW v_client_stat AS
+    SELECT
+        c.id_client,
+        CONCAT(c.prenom, ' ', c.nom) AS nom_client,
+        COUNT(r.id_reservation) AS nb_reservations,
+        COALESCE(SUM(r.prix), 0) AS total_prix
+    FROM
+        client c
+            LEFT JOIN
+        reservation r ON c.id_client = r.id_client AND r.isConfirmed = true
+    GROUP BY
+        c.id_client, c.prenom, c.nom
+    ORDER BY
+        c.nom, c.prenom;
