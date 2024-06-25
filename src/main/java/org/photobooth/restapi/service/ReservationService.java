@@ -45,6 +45,19 @@ public class ReservationService extends Service {
         historique.setTheme(reservation.getTheme());
         historique.setMontant_entrant(reservation.getPrix() / 2);
         getNgContext().save(historique);
+
+        Notification notification2 = new Notification();
+        notification2.setLibele("New reservation added : " + val);
+        notification2.setType("info");
+        notification2.setIcon("mdi mdi-bookmark-plus-outline");
+        getNgContext().save(notification2);
+
+        Notification notification = new Notification();
+        notification.setLibele("New profit added : " + reservation.getPrix() / 2);
+        notification.setType("success");
+        notification.setIcon("mdi mdi-coin");
+        getNgContext().save(notification);
+
         return val;
     }
 
@@ -131,6 +144,18 @@ public class ReservationService extends Service {
         historique.setTheme(reservation.getTheme());
         historique.setMontant_entrant(reservation.getPrix() / 2);
         getNgContext().save(historique);
+
+        Notification notification = new Notification();
+        notification.setLibele("Confirmed reservation : " + reservation.getId_reservation());
+        notification.setType("primary");
+        notification.setIcon("mdi mdi-marker-check");
+        getNgContext().save(notification);
+
+        Notification notification2 = new Notification();
+        notification2.setLibele("New profit added : " + reservation.getPrix() / 2);
+        notification2.setType("success");
+        notification2.setIcon("mdi mdi-coin");
+        getNgContext().save(notification2);
         return true;
     }
 
@@ -152,8 +177,29 @@ public class ReservationService extends Service {
             return data;
         }
 
+        Depense depense = new Depense();
+        depense.setDate_insertion(new Date(new java.util.Date().getTime()));
+        depense.setLibele("Annulation de reservation");
+
+        double ten = (reservation.getPrix() / 2) * 0.1;
+        depense.setMontant(ten);
+        getNgContext().save(depense);
+
         reservation.setValid(false);
         getNgContext().update(reservation);
+
+        Notification notification = new Notification();
+        notification.setLibele("Cancel reservation : " + idReservation);
+        notification.setType("dark");
+        notification.setIcon("mdi mdi-close-network");
+        getNgContext().save(notification);
+
+        Notification notification2 = new Notification();
+        notification2.setLibele("New expense added : " + depense.getMontant());
+        notification2.setType("warning");
+        notification2.setIcon("mdi mdi-help-circle-outline");
+        getNgContext().save(notification2);
+
         data.addAttribute("flag", true);
         data.addAttribute("message", "");
         return data;

@@ -115,6 +115,4 @@ public class StatController {
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
         }
     }
-
-
 }

@@ -3,6 +3,7 @@ package org.photobooth.restapi.service;
 import org.entityframework.dev.Metric;
 import org.photobooth.restapi.http.data.ServiceData;
 import org.photobooth.restapi.http.data.ValueRangeData;
+import org.photobooth.restapi.model.Notification;
 import org.photobooth.restapi.model.ServComp;
 import org.photobooth.restapi.model.TarifComp;
 
@@ -47,6 +48,12 @@ public class ServCompService extends Service{
                 tarifComp.setPrix(valueRangeData.getPrice());
                 getNgContext().save(tarifComp);
             }
+
+            Notification notification = new Notification();
+            notification.setLibele("New service added : " + id_service);
+            notification.setType("info");
+            notification.setIcon("mdi mdi-bookmark-plus-outline");
+            getNgContext().save(notification);
 
             getNgContext().commit();
             getNgContext().setAutoCommit(true);

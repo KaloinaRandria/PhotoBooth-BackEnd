@@ -4,6 +4,7 @@ import org.entityframework.client.GenericEntity;
 import org.entityframework.dev.Metric;
 import org.entityframework.error.EntityNotFoundException;
 import org.photobooth.restapi.model.Membre;
+import org.photobooth.restapi.model.Notification;
 import org.photobooth.restapi.model.Salaire;
 
 import java.sql.Timestamp;
@@ -49,6 +50,12 @@ public class MembreService extends Service{
             sal.setDate_insertion(new Timestamp(System.currentTimeMillis()));
             getNgContext().save(sal);
 
+            Notification notification = new Notification();
+            notification.setLibele("New member added : " + saved);
+            notification.setType("info");
+            notification.setIcon("mdi mdi-bookmark-plus-outline");
+            getNgContext().save(notification);
+
             getNgContext().commit();
             getNgContext().setAutoCommit(true);
             return saved;
@@ -77,6 +84,12 @@ public class MembreService extends Service{
             Salaire sal = updatedMember.getSalaire();
             sal.setDate_insertion(new Timestamp(System.currentTimeMillis()));
             getNgContext().save(sal);
+
+            Notification notification = new Notification();
+            notification.setLibele("Update member : " + updatedMember.getId_membre());
+            notification.setType("secondary");
+            notification.setIcon("mdi mdi-lead-pencil");
+            getNgContext().save(notification);
 
             getNgContext().commit();
             getNgContext().setAutoCommit(true);

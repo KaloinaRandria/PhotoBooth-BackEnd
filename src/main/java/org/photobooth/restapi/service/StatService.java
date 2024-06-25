@@ -228,8 +228,7 @@ public class StatService extends Service {
 
         GenericObject ge = new GenericObject();
         if (rs.next()) {
-            ge.addAttribute("id_client", rs.get(1));
-            ge.addAttribute("client_name", rs.get(2));
+            ge.addAttribute("client", getNgContext().findById((String) rs.get(1), Client.class));
             ge.addAttribute("nb_reservation", rs.get(3));
             ge.addAttribute("total_prix", rs.get(4));
         }
