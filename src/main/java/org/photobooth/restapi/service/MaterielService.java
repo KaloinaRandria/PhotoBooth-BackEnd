@@ -4,9 +4,12 @@ import org.entityframework.dev.Metric;
 import org.entityframework.error.EntityNotFoundException;
 import org.entityframework.tools.RowResult;
 import org.photobooth.restapi.http.data.MaterielAddData;
+import org.photobooth.restapi.model.Depense;
 import org.photobooth.restapi.model.Materiel;
+import org.photobooth.restapi.model.Notification;
 import org.photobooth.restapi.model.stat.AllTimeUsedMateriel;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,13 +51,51 @@ public class MaterielService extends Service {
         Materiel mt = getNgContext().findById(materielAddData.getId_materiel(), Materiel.class);
         mt.setQuantite(mt.getQuantite() + materielAddData.getNew_quantite());
         getNgContext().update(mt);
+
+        Notification notification = new Notification();
+        notification.setLibele("New material added (Toggle) : " + mt.getIntitule());
+        notification.setType("info");
+        notification.setIcon("mdi mdi-bookmark-plus-outline");
+        getNgContext().save(notification);
+
+        Depense depense = new Depense();
+        depense.setLibele("Achat materiel");
+        depense.setMontant(mt.getPrix() * materielAddData.getNew_quantite());
+        depense.setDate_insertion(new Date(new java.util.Date().getTime()));
+        getNgContext().save(depense);
+
+        Notification notification2 = new Notification();
+        notification2.setLibele("New expense added : " + depense.getMontant());
+        notification2.setType("warning");
+        notification2.setIcon("mdi mdi-help-circle-outline");
+        getNgContext().save(notification2);
     }
 
     public String save(Materiel materiel) throws Exception {
 
         Metric.print(materiel);
         materiel.setImage_url("");
-        return (String) getNgContext().save(materiel);
+        String s =  (String) getNgContext().save(materiel);
+
+        Notification notification = new Notification();
+        notification.setLibele("New material added (Achat) : " + materiel.getIntitule());
+        notification.setType("info");
+        notification.setIcon("mdi mdi-bookmark-plus-outline");
+        getNgContext().save(notification);
+
+        Depense depense = new Depense();
+        depense.setLibele("Achat materiel");
+        depense.setMontant(materiel.getPrix() * materiel.getQuantite());
+        depense.setDate_insertion(new Date(new java.util.Date().getTime()));
+        getNgContext().save(depense);
+
+        Notification notification2 = new Notification();
+        notification2.setLibele("New expense added : " + depense.getMontant());
+        notification2.setType("warning");
+        notification2.setIcon("mdi mdi-help-circle-outline");
+        getNgContext().save(notification2);
+
+        return s;
     }
 
     public void update(Materiel materiel) throws Exception {
@@ -63,6 +104,12 @@ public class MaterielService extends Service {
 
     public void delete(String id) throws Exception {
         getNgContext().delete(Materiel.class, id);
+
+        Notification notification = new Notification();
+        notification.setLibele("Delete material : " + id);
+        notification.setType("danger");
+        notification.setIcon("mdi mdi-delete-forever");
+        getNgContext().save(notification);
     }
 
     public AllTimeUsedMateriel getStat() throws Exception {

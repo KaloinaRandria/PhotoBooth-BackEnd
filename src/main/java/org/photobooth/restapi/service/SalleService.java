@@ -1,6 +1,7 @@
 package org.photobooth.restapi.service;
 
 import org.photobooth.restapi.model.Membre;
+import org.photobooth.restapi.model.Notification;
 import org.photobooth.restapi.model.Role;
 import org.photobooth.restapi.model.Salle;
 import org.photobooth.restapi.model.img.ImageSalle;
@@ -25,15 +26,34 @@ public class SalleService extends Service{
     }
 
     public String insertSalle(Salle salle) throws Exception {
-        return (String) getNgContext().save(salle);
+        String s =  (String) getNgContext().save(salle);
+        Notification notification = new Notification();
+        notification.setLibele("New room added : " + s);
+        notification.setType("info");
+        notification.setIcon("mdi mdi-bookmark-plus-outline");
+        getNgContext().save(notification);
+
+        return s;
     }
 
     public void update(Salle salle) throws Exception {
         getNgContext().update(salle);
+
+        Notification notification = new Notification();
+        notification.setLibele("Update room : " + salle.getId_salle());
+        notification.setType("secondary");
+        notification.setIcon("mdi mdi-lead-pencil");
+        getNgContext().save(notification);
     }
 
     public void delete(String id) throws Exception {
         getNgContext().delete(Salle.class, id);
+
+        Notification notification = new Notification();
+        notification.setLibele("Delete room : " + id);
+        notification.setType("danger");
+        notification.setIcon("mdi mdi-delete-forever");
+        getNgContext().save(notification);
     }
 
 }

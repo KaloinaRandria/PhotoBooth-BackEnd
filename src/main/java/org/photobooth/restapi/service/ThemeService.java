@@ -6,6 +6,7 @@ import org.entityframework.tools.RowResult;
 import org.photobooth.restapi.http.data.MaterielData;
 import org.photobooth.restapi.http.data.MaterielDataList;
 import org.photobooth.restapi.model.Depense;
+import org.photobooth.restapi.model.Notification;
 import org.photobooth.restapi.model.ServComp;
 import org.photobooth.restapi.model.Theme;
 import org.photobooth.restapi.model.img.ImageTheme;
@@ -77,10 +78,22 @@ public class ThemeService extends Service {
             double worth = getThemeWorth(idTheme);
 
             Depense depense = new Depense();
-            depense.setLibele("Achat Theme");
+            depense.setLibele("Achat Theme : " + theme.getIntitule() + "(" + idTheme + ")");
             depense.setMontant(worth);
             depense.setDate_insertion(new Date(new java.util.Date().getTime()));
             getNgContext().save(depense);
+
+            Notification notification2 = new Notification();
+            notification2.setLibele("New expense added for theme : " + depense.getMontant());
+            notification2.setType("warning");
+            notification2.setIcon("mdi mdi-help-circle-outline");
+            getNgContext().save(notification2);
+
+            Notification notification = new Notification();
+            notification.setLibele("New theme added : " + theme.getIntitule() + "(" + idTheme + ")");
+            notification.setType("info");
+            notification.setIcon("mdi mdi-bookmark-plus-outline");
+            getNgContext().save(notification);
 
             getNgContext().commit();
             getNgContext().setAutoCommit(true);

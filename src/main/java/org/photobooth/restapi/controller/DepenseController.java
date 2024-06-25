@@ -81,11 +81,23 @@ public class DepenseController {
   */
 
     @PutMapping("/update")
-    public ResponseEntity<ApiResponse> updateClient(@RequestBody Depense depense) {
+    public ResponseEntity<ApiResponse> update(@RequestBody Depense depense) {
         try (DepenseService depenseService = new DepenseService()) {
             depenseService.update(depense);
             ApiResponse response = new ApiResponse(true,depense,"done");
             return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse> delete(@PathVariable String id) {
+        try (DepenseService depenseService = new DepenseService()) {
+            depenseService.delete(id);
+            ApiResponse apiResponse = new ApiResponse(true, "done", null);
+            return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
             logger.severe(e.getMessage());
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));

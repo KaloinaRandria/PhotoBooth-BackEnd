@@ -268,6 +268,15 @@
                              date_insertion date not null
     );
 
+    create table notification (
+        id SERIAL PRIMARY KEY ,
+        libele varchar(255) not null,
+        type varchar(30) not null,
+        icon varchar(40) ,
+        action_date timestamp not null,
+        id_membre VARCHAR(20) references membre(id_membre)
+    );
+
 creer moi une fonction
 
     SELECT
@@ -342,3 +351,5 @@ creer moi une fonction
         c.id_client, c.prenom, c.nom
     ORDER BY
         c.nom, c.prenom;
+
+
