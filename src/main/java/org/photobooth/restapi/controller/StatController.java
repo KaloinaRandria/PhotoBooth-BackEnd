@@ -151,4 +151,17 @@ public class StatController {
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
         }
     }
+
+    @GetMapping("/mat")
+    public ResponseEntity<ApiResponse> getMatStat(){
+        try (StatService statService = new StatService()) {
+            MatStat data = statService.getMatStat();
+            ApiResponse apiResponse = new ApiResponse(true,data, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
 }
