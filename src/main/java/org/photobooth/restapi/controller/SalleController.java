@@ -1,6 +1,7 @@
 package org.photobooth.restapi.controller;
 
 import org.entityframework.dev.ApiResponse;
+import org.photobooth.restapi.model.CurrentState;
 import org.photobooth.restapi.model.Salle;
 import org.photobooth.restapi.service.SalleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,18 @@ body (example) :
             salleService.delete(id);
             ApiResponse response = new ApiResponse(true, null, "done");
             return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @GetMapping("/curr")
+    public ResponseEntity<ApiResponse> getCurrState() {
+        try (SalleService salleService = new SalleService()) {
+            List<CurrentState> currentStates = salleService.getCurrentState();
+            ApiResponse apiResponse = new ApiResponse(true, currentStates, null);
+            return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
             logger.severe(e.getMessage());
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));

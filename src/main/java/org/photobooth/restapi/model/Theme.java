@@ -24,9 +24,16 @@ public class Theme {
     private List<ImageTheme> imageThemes;
     @Col(isTransient = true)
     private double worth;
+    @Col(isTransient = true)
+    private int nbVisit;
+    @Col(isTransient = true)
+    private int nbPersonne;
+    @Col(isTransient = true)
+    private String type;
+    @Col(isTransient = true)
+    private String arrow;
 
     public Theme() {
-
     }
 
     public String getId_theme() {
@@ -101,5 +108,35 @@ public class Theme {
         this.worth = worth;
     }
 
-    
+    public int getNbVisit() {
+        return nbVisit;
+    }
+
+    public void setNbVisit(int nbVisit) {
+        this.nbVisit = nbVisit;
+    }
+
+    public int getNbPersonne() {
+        return nbPersonne;
+    }
+
+    public void setNbPersonne(int nbPersonne) {
+        this.nbPersonne = nbPersonne;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getArrow() {
+        return arrow;
+    }
+
+    public void setArrow(String arrow) {
+        this.arrow = arrow;
+    }
 }

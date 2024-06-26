@@ -8,6 +8,7 @@ public class ReservationInterval {
     private String id_salle;
     private String id_service;
     private int nb_personne;
+    private String id_client;
 
     public ReservationInterval() {
     }
@@ -50,5 +51,13 @@ public class ReservationInterval {
 
     public void setNb_personne(int nb_personne) {
         this.nb_personne = nb_personne;
+    }
+
+    public String getId_client() {
+        return id_client;
+    }
+
+    public void setId_client(String id_client) {
+        this.id_client = id_client;
     }
 }

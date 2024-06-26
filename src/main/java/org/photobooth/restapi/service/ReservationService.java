@@ -8,6 +8,7 @@ import org.photobooth.restapi.http.data.ReservationInterval;
 import org.photobooth.restapi.http.data.Shedule;
 import org.photobooth.restapi.model.*;
 
+import java.awt.*;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -86,6 +87,7 @@ public class ReservationService extends Service {
 
         boolean flag = isAvailable(interval.getDebut(), interval.getFin());
         data.addAttribute("flag", flag);
+        data.addAttribute("bonus", false);
 
         if (!flag) {
             return data;
@@ -102,6 +104,16 @@ public class ReservationService extends Service {
         }else {
             data.addAttribute("theme", themes.get(0));
             double price = calculatePrice(themes.get(0), service, interval.getNb_personne());
+
+
+            try (StatService statService = new StatService()){
+                GenericObject genericObject = statService.getAllTimeClientStat(getNgContext(), interval.getId_client());
+                long nb_resa = (long) genericObject.getAttribute("nb_reservation");
+                if (nb_resa % 5 == 4) {
+                    data.addAttribute("bonus", true);
+                    price = price - (price * 0.1);
+                }
+            }
             data.addAttribute("prix", price);
         }
 
@@ -118,6 +130,17 @@ public class ReservationService extends Service {
         return rs.isEmpty();
     }
 
+    private static String toHexString(Color color) {
+        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+    }
+
+    private static String fadeColor(String colorHex, double opacity) {
+        Color color = Color.decode(colorHex);
+        int alpha = (int) Math.round(opacity * 255); // Convertir l'opacité de 0.0 à 1.0 en valeur alpha (0 à 255)
+        Color fadedColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+        return toHexString(fadedColor);
+    }
+
     public List<Shedule> getAppShedule() throws Exception {
         List<Reservation> reserv = getNgContext().findWhen(Reservation.class, "ORDER BY heure_debut");
         List<Shedule> sheduleList = new ArrayList<>();
@@ -125,8 +148,12 @@ public class ReservationService extends Service {
             Shedule shedule = new Shedule();
             shedule.setStart(reservation.getHeure_debut());
             shedule.setEnd(reservation.getHeure_fin());
-            shedule.setTitle(String.valueOf(reservation.getSalle().getNumero()));
+            String description = reservation.getService().getIntitule() + " : " + reservation.getClient().getNom();
+            shedule.setTitle("Room - " + String.valueOf(reservation.getSalle().getNumero()) + "\n" + description);
             shedule.setClassName(reservation.getService().getIntitule());
+            shedule.setBackgroundColor(fadeColor(reservation.getService().getColor(), 0.3));
+            shedule.setColor(fadeColor(reservation.getService().getColor(), 0.3));
+            shedule.setDescription(description);
             sheduleList.add(shedule);
         }
         return sheduleList;
