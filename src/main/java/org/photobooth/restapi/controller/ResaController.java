@@ -105,4 +105,17 @@ public class ResaController {
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
         }
     }
+
+    @GetMapping("/alldone")
+    public ResponseEntity<ApiResponse> getAllDone() {
+        try (ReservationService reservationService = new ReservationService()) {
+            List<Reservation> reservations = reservationService.getAllReservationDone();
+            ApiResponse apiResponse = new ApiResponse(true, reservations, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
 }

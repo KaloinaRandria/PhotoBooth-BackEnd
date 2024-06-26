@@ -6,6 +6,7 @@ import org.entityframework.dev.GenericObject;
 import org.entityframework.dev.Metric;
 import org.entityframework.tools.RowResult;
 import org.photobooth.restapi.model.Client;
+import org.photobooth.restapi.model.Materiel;
 import org.photobooth.restapi.model.Reservation;
 import org.photobooth.restapi.model.ServComp;
 import org.photobooth.restapi.model.stat.*;
@@ -358,5 +359,17 @@ public class StatService extends Service {
             }
         }
         throw new Exception("wait , nothing found!");
+    }
+
+    public MatStat getMatStat() throws Exception {
+        MatStat matStat = new MatStat();
+
+        String query = "SELECT SUM(worth) from v_theme_worth";
+        RowResult rs = getNgContext().execute(query);
+        if (rs.next()) {
+            BigDecimal to = (BigDecimal) rs.get(1);
+            matStat.setTotal(to.doubleValue());
+        }
+        return matStat;
     }
 }

@@ -23,7 +23,11 @@ public class ReservationService extends Service {
         super();
     }
     public List<Reservation> getAllReservation() throws Exception {
-        return getNgContext().findWhereArgs(Reservation.class, "isValid = ?", true);
+        return getNgContext().findWhereArgs(Reservation.class, "isValid = ? and isConfirmed = false and date_reservee >= current_timestamp order by heure_debut ", true);
+    }
+
+    public List<Reservation> getAllReservationDone() throws Exception {
+        return getNgContext().findWhereArgs(Reservation.class, "isValid = false or isConfirmed = true order by heure_debut desc");
     }
     public Optional<Reservation> getReservationById(String id) throws  Exception{
         try {
