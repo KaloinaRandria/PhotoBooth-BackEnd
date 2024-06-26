@@ -462,3 +462,5 @@ creer moi une fonction
         ct.intitule
     ORDER BY
         nombre_reservations DESC;
+
+    CREATE VIEW v_tarif_service AS select vr.range_label , tcs.prix , cs.id_comp_service from tarif_comp_service tcs JOIN comp_service cs on tcs.id_comp_service = cs.id_comp_service JOIN value_ranges vr on tcs.id_value_ranges = vr.id;

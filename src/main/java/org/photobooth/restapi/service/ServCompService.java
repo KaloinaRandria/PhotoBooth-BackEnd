@@ -6,6 +6,7 @@ import org.photobooth.restapi.http.data.ValueRangeData;
 import org.photobooth.restapi.model.Notification;
 import org.photobooth.restapi.model.ServComp;
 import org.photobooth.restapi.model.TarifComp;
+import org.photobooth.restapi.model.stat.ServCompTarif;
 
 import java.util.List;
 
@@ -15,7 +16,16 @@ public class ServCompService extends Service{
     }
 
     public List<ServComp> getAllService() throws Exception {
-        return this.getAll(ServComp.class);
+        List<ServComp> servComps =  this.getAll(ServComp.class);
+        for (ServComp servComp : servComps) {
+            getAndSetTarif(servComp);
+        }
+        return servComps;
+    }
+
+    private void getAndSetTarif(ServComp servComp) throws Exception {
+        List<ServCompTarif> servCompTarifs = getNgContext().executeToList(ServCompTarif.class, "SELECT * FROM v_tarif_service where id_comp_service = ?", servComp.getId_comp_service());
+        servComp.setTarif(servCompTarifs);
     }
 
     public String insertService(ServComp servComp) throws Exception {

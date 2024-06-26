@@ -3,6 +3,9 @@ package org.photobooth.restapi.model;
 import org.entityframework.tools.Col;
 import org.entityframework.tools.Primary;
 import org.entityframework.tools.Table;
+import org.photobooth.restapi.model.stat.ServCompTarif;
+
+import java.util.List;
 
 @Table(name = "comp_service")
 public class ServComp {
@@ -12,6 +15,9 @@ public class ServComp {
     private double prix_unitaire;
     private String icon;
     private String color;
+    @Col(isTransient = true)
+    private List<ServCompTarif> tarif;
+
 
     public ServComp() {}
 
@@ -53,5 +59,13 @@ public class ServComp {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public List<ServCompTarif> getTarif() {
+        return tarif;
+    }
+
+    public void setTarif(List<ServCompTarif> tarif) {
+        this.tarif = tarif;
     }
 }
