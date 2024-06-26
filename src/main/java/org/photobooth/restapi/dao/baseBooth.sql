@@ -352,4 +352,95 @@ creer moi une fonction
     ORDER BY
         c.nom, c.prenom;
 
+    CREATE VIEW v_curr_state AS
+    SELECT DISTINCT ON (s.id_salle)
+                s.id_salle,
+                t.id_theme,
+                CASE
+                WHEN r.id_reservation IS NULL THEN true
+                ELSE false
+        END AS isFree
+    FROM
+        salle s
+    LEFT JOIN
+        theme t ON s.id_salle = t.id_salle
+        AND CURRENT_DATE BETWEEN t.date_debut AND t.date_fin
+    LEFT JOIN
+        reservation r ON s.id_salle = r.id_salle
+        AND CURRENT_DATE = r.date_reservee
+        AND CURRENT_TIMESTAMP BETWEEN r.heure_debut AND r.heure_fin
+    ORDER BY
+        s.id_salle,
+        t.id_theme;
 
+    CREATE VIEW v_profit AS
+    WITH date_series AS (
+        SELECT
+            generate_series('2023-01-01'::date, CURRENT_DATE, '1 day') AS date_action
+    )
+    SELECT
+        EXTRACT(EPOCH FROM d.date_action) * 1000 AS date_action,
+        COALESCE(SUM(h.montant_entrant), 0) AS montant_total_par_jour
+    FROM
+        date_series d
+            LEFT JOIN
+        historique h ON d.date_action = h.date_action
+    GROUP BY
+        d.date_action
+    ORDER BY
+        d.date_action;
+
+
+
+    SELECT id_service, COUNT(*) AS usage_count
+    FROM reservation
+    WHERE date_reservation BETWEEN '2024-01-01' AND '2024-07-31'
+    GROUP BY id_service
+    ORDER BY usage_count DESC LIMIT 1;
+
+    WITH chiffre_affaire AS (
+        SELECT SUM(montant_entrant) AS total_chiffre_affaire
+        FROM historique
+        WHERE date_action BETWEEN '2024-01-01' AND '2024-07-31'
+    ),
+         total_depenses AS (
+             SELECT SUM(montant) AS total_depense
+             FROM depense
+             WHERE date_insertion BETWEEN '2024-01-01' AND '2024-07-31'
+         )
+    SELECT
+        COALESCE(total_chiffre_affaire, 0) AS chiffre_affaire,
+        COALESCE(total_depense, 0) AS depense,
+        COALESCE(total_chiffre_affaire, 0) - COALESCE(total_depense, 0) AS benefice
+    FROM
+        chiffre_affaire, total_depenses;
+
+    SELECT * FROM theme where date_debut >= '2023-01-01' AND date_fin <= '2026-01-01';
+
+    CREATE VIEW v_stat_theme AS
+    SELECT
+        t.id_theme,
+        COALESCE(SUM(r.nb_personne), 0) AS total_personnes,
+        COUNT(r.id_reservation) AS visit
+    FROM
+        theme t
+            LEFT JOIN
+        reservation r ON t.id_theme = r.id_theme AND r.isConfirmed = true
+    GROUP BY
+        t.id_theme
+    ORDER BY
+        visit DESC;
+
+
+    SELECT
+        t.id_theme,
+        COALESCE(SUM(r.nb_personne), 0) AS total_personnes,
+        COUNT(r.id_reservation) AS visit
+    FROM
+        theme t
+            LEFT JOIN
+        reservation r ON t.id_theme = r.id_theme AND r.isConfirmed = true AND r.date_reservation BETWEEN '2023-01-01' AND '2023-12-31' WHERE t.id_theme = 'TH_32'
+    GROUP BY
+        t.id_theme
+    ORDER BY
+        visit DESC;

@@ -3,10 +3,7 @@ package org.photobooth.restapi.controller;
 import org.entityframework.dev.ApiResponse;
 import org.entityframework.dev.GenericObject;
 import org.photobooth.restapi.model.Client;
-import org.photobooth.restapi.model.stat.AllTimeThemeStat;
-import org.photobooth.restapi.model.stat.ClientStat;
-import org.photobooth.restapi.model.stat.ReservationStat;
-import org.photobooth.restapi.model.stat.ServiceStat;
+import org.photobooth.restapi.model.stat.*;
 import org.photobooth.restapi.service.ClientService;
 import org.photobooth.restapi.service.StatService;
 import org.photobooth.restapi.service.ThemeService;
@@ -93,7 +90,7 @@ public class StatController {
     @GetMapping("/client/{idClient}")
     public ResponseEntity<ApiResponse> getResaStatYear(@PathVariable String idClient){
         try (StatService statService = new StatService()) {
-            GenericObject data = statService.getAllTimeClientStat(idClient);
+            GenericObject data = statService.getAllTimeClientStat(statService.getNgContext(),idClient);
             ApiResponse apiResponse = new ApiResponse(true,data, null);
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
@@ -107,6 +104,45 @@ public class StatController {
     public ResponseEntity<ApiResponse> getTopClient(@PathVariable int limit){
         try (StatService statService = new StatService()) {
             List<ClientStat> data = statService.getTopClient(limit);
+            ApiResponse apiResponse = new ApiResponse(true,data, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @GetMapping("/profit")
+    public ResponseEntity<ApiResponse> getProfit(){
+        try (StatService statService = new StatService()) {
+            GenericObject data = statService.allProfit();
+            ApiResponse apiResponse = new ApiResponse(true,data, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @PostMapping("/service/range")
+    public ResponseEntity<ApiResponse> getMostService(@RequestBody MostServiceStat mostServiceStat){
+        try (StatService statService = new StatService()) {
+            MostServiceStat data = statService.getMostService(mostServiceStat);
+            ApiResponse apiResponse = new ApiResponse(true,data, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @PostMapping("/finance/range")
+    public ResponseEntity<ApiResponse> getFinanceRange(@RequestBody MostServiceStat mostServiceStat){
+        try (StatService statService = new StatService()) {
+            GenericObject data = statService.getFinancial(mostServiceStat.getStart(), mostServiceStat.getEnd());
             ApiResponse apiResponse = new ApiResponse(true,data, null);
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {

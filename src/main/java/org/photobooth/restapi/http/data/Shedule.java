@@ -9,6 +9,9 @@ public class Shedule {
     private Timestamp start;
     private Timestamp end;
     private String classNames;
+    private String backgroundColor;
+    private String color;
+    private String description;
 
     public Shedule() {}
 
@@ -42,5 +45,33 @@ public class Shedule {
 
     public void setClassName(String className) {
         this.classNames = className;
+    }
+
+    public void setClassNames(String classNames) {
+        this.classNames = classNames;
+    }
+
+    public String getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(String backgroundColor) {
+        this.backgroundColor = backgroundColor;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

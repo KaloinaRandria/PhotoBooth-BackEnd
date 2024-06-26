@@ -1,15 +1,19 @@
 package org.photobooth.restapi.service;
 
+import org.entityframework.client.GenericEntity;
 import org.entityframework.dev.Calculator;
 import org.entityframework.dev.GenericObject;
 import org.entityframework.dev.Metric;
 import org.entityframework.tools.RowResult;
 import org.photobooth.restapi.model.Client;
 import org.photobooth.restapi.model.Reservation;
+import org.photobooth.restapi.model.ServComp;
 import org.photobooth.restapi.model.stat.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.sql.Date;
@@ -222,13 +226,13 @@ public class StatService extends Service {
         return genericObject;
     }
 
-    public GenericObject getAllTimeClientStat(String id_client) throws Exception {
+    public GenericObject getAllTimeClientStat(GenericEntity ng, String id_client) throws Exception {
         String query = "SELECT * FROM v_client_stat where id_client = ?";
         RowResult rs = getNgContext().execute(query, id_client);
 
         GenericObject ge = new GenericObject();
         if (rs.next()) {
-            ge.addAttribute("client", getNgContext().findById((String) rs.get(1), Client.class));
+            ge.addAttribute("client", ng.findById((String) rs.get(1), Client.class));
             ge.addAttribute("nb_reservation", rs.get(3));
             ge.addAttribute("total_prix", rs.get(4));
         }
@@ -251,5 +255,108 @@ public class StatService extends Service {
             clientStats.add(clientStat);
         }
         return clientStats;
+    }
+
+    private static String conv(double value) {
+        BigDecimal bigDecimal = BigDecimal.valueOf(value);
+        return bigDecimal.toPlainString();
+    }
+
+    public GenericObject allProfit() throws Exception {
+        RowResult rs = getNgContext().execute("SELECT * from v_profit");
+        List<Object[]> data = new ArrayList<>();
+
+        while (rs.next()) {
+            Double dtBigDecimal = (Double) rs.get(1);
+            long timestamp = dtBigDecimal.longValue();
+            double value = ((BigDecimal) rs.get(2)).doubleValue();
+
+            Object[] entry = { timestamp, value };
+            data.add(entry);
+        }
+
+        GenericObject genericObject = new GenericObject();
+        genericObject.addAttribute("data", data);
+
+        return genericObject;
+    }
+
+    public MostServiceStat getMostService(MostServiceStat serviceS) throws Exception {
+        String query = "SELECT id_service, COUNT(*) AS usage_count" +
+                "    FROM reservation" +
+                "    WHERE date_reservation BETWEEN ? AND ?" +
+                "    GROUP BY id_service" +
+                "    ORDER BY usage_count DESC LIMIT 1";
+        RowResult rs = getNgContext().execute(query, serviceS.getStart(), serviceS.getEnd());
+
+        if (rs.isEmpty()) {
+            return serviceS;
+        }
+
+        if (rs.next()) {
+            ServComp servComp = getNgContext().findById((String) rs.get(1), ServComp.class);
+            int count = ((Long) rs.get(2)).intValue();
+            serviceS.setService(servComp);
+            serviceS.setUse_count(count);
+        }
+        return serviceS;
+    }
+
+    private String formatBigDecimal(BigDecimal value) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator('.');
+
+        DecimalFormat df = new DecimalFormat("#,###.##", symbols);
+        return df.format(value);
+    }
+
+    public GenericObject getFinancial(Date start , Date end) throws Exception {
+        String query = "WITH chiffre_affaire AS (" +
+                "        SELECT SUM(montant_entrant) AS total_chiffre_affaire" +
+                "        FROM historique" +
+                "        WHERE date_action BETWEEN ? AND ?" +
+                "    )," +
+                "         total_depenses AS (" +
+                "             SELECT SUM(montant) AS total_depense" +
+                "             FROM depense" +
+                "             WHERE date_insertion BETWEEN ? AND ?" +
+                "         )" +
+                "    SELECT" +
+                "        COALESCE(total_chiffre_affaire, 0) AS chiffre_affaire," +
+                "        COALESCE(total_depense, 0) AS depense," +
+                "        COALESCE(total_chiffre_affaire, 0) - COALESCE(total_depense, 0) AS benefice" +
+                "    FROM" +
+                "        chiffre_affaire, total_depenses";
+
+        RowResult rs = getNgContext().execute(query, start, end , start, end);
+
+        if(!rs.isEmpty()) {
+            if(rs.next()) {
+                BigDecimal chiffre = (BigDecimal) rs.get(1);
+                BigDecimal depense = (BigDecimal) rs.get(2);
+                BigDecimal benefice = (BigDecimal) rs.get(3);
+
+                String formattedChiffre = formatBigDecimal(chiffre);
+                String formattedDepense = formatBigDecimal(depense);
+                String formattedBenefice = formatBigDecimal(benefice);
+
+                GenericObject genericObject = new GenericObject();
+                genericObject.addAttribute("chiffre", formattedChiffre);
+                genericObject.addAttribute("depense", formattedDepense);
+                genericObject.addAttribute("benefice", formattedBenefice);
+
+                query = "SELECT COALESCE(SUM(nb_personne), 0) AS total_personnes " +
+                        "FROM reservation " +
+                        "WHERE date_reservee BETWEEN ? AND ?";
+
+                RowResult rs2 = getNgContext().execute(query, start, end);
+                if(rs2.next()) {
+                    genericObject.addAttribute("visit", rs2.get(1));
+                }
+
+                return genericObject;
+            }
+        }
+        throw new Exception("wait , nothing found!");
     }
 }

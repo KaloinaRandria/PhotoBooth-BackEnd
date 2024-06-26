@@ -3,7 +3,10 @@ package org.photobooth.restapi.controller;
 import org.entityframework.dev.ApiResponse;
 import org.entityframework.dev.Metric;
 import org.photobooth.restapi.http.data.MaterielDataList;
+import org.photobooth.restapi.model.Role;
 import org.photobooth.restapi.model.Theme;
+import org.photobooth.restapi.model.stat.MostServiceStat;
+import org.photobooth.restapi.service.RoleService;
 import org.photobooth.restapi.service.ThemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +37,19 @@ public class ThemeController {
     public ResponseEntity<ApiResponse> getAllTheme() {
         try (ThemeService themeService = new ThemeService()) {
             List<Theme> themes = themeService.getAllTheme();
+            ApiResponse apiResponse = new ApiResponse(true, themes, null);
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @PostMapping("/range")
+    public ResponseEntity<ApiResponse> getAllTheme(@RequestBody MostServiceStat mostServiceStat) {
+        try (ThemeService themeService = new ThemeService()) {
+            Metric.print(mostServiceStat);
+            List<Theme> themes = themeService.getAllTheme(mostServiceStat.getStart(), mostServiceStat.getEnd());
             ApiResponse apiResponse = new ApiResponse(true, themes, null);
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
@@ -91,6 +107,18 @@ public class ThemeController {
             ApiResponse response = new ApiResponse(true, theme, "done");
             logger.info("new Theme inserted");
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            return ResponseEntity.internalServerError().body(ApiResponse.Of(e));
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponse> updateTheme(@RequestBody Theme theme) {
+        try (ThemeService themeService = new ThemeService()) {
+            themeService.update(theme);
+            ApiResponse response = new ApiResponse(true, "done", "done");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.severe(e.getMessage());
             return ResponseEntity.internalServerError().body(ApiResponse.Of(e));

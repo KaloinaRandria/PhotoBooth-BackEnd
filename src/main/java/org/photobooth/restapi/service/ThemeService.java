@@ -1,6 +1,8 @@
 package org.photobooth.restapi.service;
 
+import io.micrometer.core.instrument.MultiGauge;
 import org.entityframework.dev.Calculator;
+import org.entityframework.dev.GenericSorter;
 import org.entityframework.error.EntityNotFoundException;
 import org.entityframework.tools.RowResult;
 import org.photobooth.restapi.http.data.MaterielData;
@@ -19,10 +21,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class ThemeService extends Service {
     public ThemeService() {
@@ -34,6 +33,56 @@ public class ThemeService extends Service {
         for (Theme theme : themes) {
             theme.setImageThemes(getImageTheme(theme.getId_theme()));
             theme.setWorth(getThemeWorth(theme.getId_theme()));
+            setVisit(theme);
+            theme.setType("success");
+            theme.setArrow("top-right");
+            if(theme.getNbPersonne() < 30) {
+                theme.setType("danger");
+                theme.setArrow("bottom-right");
+            }
+        }
+        GenericSorter.sort(themes, "nbVisit");
+        Collections.reverse(themes);
+        return themes;
+    }
+
+    private void setVisit(Theme theme) throws Exception {
+        String query = "SELECT * FROM v_stat_theme where id_theme = ?";
+        RowResult rs = getNgContext().execute(query, theme.getId_theme());
+        if(rs.next()) {
+            Long l = (Long) rs.get(2);
+            theme.setNbPersonne(l.intValue());
+            Long l2 = (Long) rs.get(3);
+            theme.setNbVisit(l2.intValue());
+        }
+    }
+
+    public List<Theme> getAllTheme(Date start, Date end) throws Exception {
+        List<Theme> themes = getNgContext().findWhereArgs(Theme.class, "date_debut >= ? AND date_fin <= ?", start, end);
+        for (Theme theme : themes) {
+            theme.setImageThemes(getImageTheme(theme.getId_theme()));
+            theme.setWorth(getThemeWorth(theme.getId_theme()));
+
+            String q = "SELECT" +
+                    "        t.id_theme," +
+                    "        COALESCE(SUM(r.nb_personne), 0) AS total_personnes," +
+                    "        COUNT(r.id_reservation) AS visit" +
+                    "    FROM" +
+                    "        theme t" +
+                    "            LEFT JOIN" +
+                    "        reservation r ON t.id_theme = r.id_theme AND r.isConfirmed = true AND r.date_reservation BETWEEN ? AND ? WHERE t.id_theme = ?" +
+                    "    GROUP BY" +
+                    "        t.id_theme" +
+                    "    ORDER BY" +
+                    "        visit DESC";
+
+            RowResult rs = getNgContext().execute(q, start, end, theme.getId_theme());
+            if(rs.next()) {
+                Long l = (Long) rs.get(2);
+                theme.setNbPersonne(l.intValue());
+                Long l2 = (Long) rs.get(3);
+                theme.setNbVisit(l2.intValue());
+            }
         }
         return themes;
     }
@@ -115,6 +164,16 @@ public class ThemeService extends Service {
         } else {
             return fileName + "__" + millis;
         }
+    }
+
+    public void update(Theme theme) throws Exception {
+        getNgContext().update(theme);
+
+        Notification notification = new Notification();
+        notification.setLibele("Update theme : " + theme.getId_theme());
+        notification.setType("secondary");
+        notification.setIcon("mdi mdi-lead-pencil");
+        getNgContext().save(notification);
     }
 
     private List<ImageTheme> getImageTheme(String id_theme) throws Exception {

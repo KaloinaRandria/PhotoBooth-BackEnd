@@ -1,11 +1,11 @@
 package org.photobooth.restapi.service;
 
-import org.photobooth.restapi.model.Membre;
-import org.photobooth.restapi.model.Notification;
-import org.photobooth.restapi.model.Role;
-import org.photobooth.restapi.model.Salle;
+import org.entityframework.tools.RowResult;
+import org.photobooth.restapi.model.*;
 import org.photobooth.restapi.model.img.ImageSalle;
+import org.photobooth.restapi.model.img.ImageTheme;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SalleService extends Service{
@@ -56,4 +56,27 @@ public class SalleService extends Service{
         getNgContext().save(notification);
     }
 
+    public List<CurrentState> getCurrentState() throws Exception {
+        RowResult rs = getNgContext().execute("SELECT * FROM v_curr_state");
+        List<CurrentState> currentStates = new ArrayList<>();
+
+        while (rs.next()) {
+            CurrentState currentState = new CurrentState();
+            String id_salle = (String) rs.get(1);
+            String id_theme = (String) rs.get(2);
+            boolean isFree = (boolean) rs.get(3);
+
+            currentState.setSalle(getNgContext().findById(id_salle, Salle.class));
+            if (id_theme == null) {
+                currentState.setTheme(null);
+            } else {
+                Theme theme = getNgContext().findById(id_theme, Theme.class);
+                theme.setImageThemes(getNgContext().findWhere(ImageTheme.class, "id_theme = '" + id_theme + "'"));
+                currentState.setTheme(theme);
+            }
+            currentState.setFree(isFree);
+            currentStates.add(currentState);
+        }
+        return currentStates;
+    }
 }
