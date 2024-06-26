@@ -444,3 +444,21 @@ creer moi une fonction
         t.id_theme
     ORDER BY
         visit DESC;
+
+
+    SELECT
+        ct.intitule AS categorie_theme,
+        COUNT(r.id_reservation) AS nombre_reservations
+    FROM
+        reservation r
+            JOIN
+        theme t ON r.id_theme = t.id_theme
+            JOIN
+        categorie_theme ct ON t.id_categorie_theme = ct.id_categorie_theme
+    WHERE
+        EXTRACT(MONTH FROM r.heure_debut) = 6
+      AND EXTRACT(YEAR FROM r.heure_debut) = 2024
+    GROUP BY
+        ct.intitule
+    ORDER BY
+        nombre_reservations DESC;
