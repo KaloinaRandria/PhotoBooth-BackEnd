@@ -29,7 +29,7 @@ public class ThemeService extends Service {
     }
 
     public List<Theme> getAllTheme () throws Exception {
-        List<Theme> themes = getNgContext().findAll(Theme.class);
+        List<Theme> themes = getNgContext().findWhen(Theme.class , "ORDER by date_debut asc");
         for (Theme theme : themes) {
             theme.setImageThemes(getImageTheme(theme.getId_theme()));
             theme.setWorth(getThemeWorth(theme.getId_theme()));

@@ -1,6 +1,6 @@
     CREATE SEQUENCE role_seq START 10 INCREMENT 1;
     CREATE SEQUENCE poste_seq START 1 INCREMENT 1;
-    CREATE SEQUENCE membre_seq START 1 INCREMENT 1;
+    CREATE SEQUENCE id_membre_seq START 1 INCREMENT 1;
     CREATE SEQUENCE image_membre_seq START 1 INCREMENT 1;
     CREATE SEQUENCE salle_seq START 1 INCREMENT 1;
     CREATE SEQUENCE image_salle_seq START 1 INCREMENT 1;
@@ -9,7 +9,7 @@
     CREATE SEQUENCE image_theme_seq START 1 INCREMENT 1;
     CREATE SEQUENCE materiel_seq START 1 INCREMENT 1;
     CREATE SEQUENCE materiel_theme_seq START 1 INCREMENT 1;
-    CREATE SEQUENCE salaire_seq START 1 INCREMENT 1;
+    CREATE SEQUENCE id_salaire_seq START 1 INCREMENT 1;
     CREATE SEQUENCE comp_service_seq START 1 INCREMENT 1;
     CREATE SEQUENCE tarif_comp_service_seq START 1 INCREMENT 1;
     CREATE SEQUENCE client_seq START 1 INCREMENT 1;
@@ -277,7 +277,6 @@
         id_membre VARCHAR(20) references membre(id_membre)
     );
 
-creer moi une fonction
 
     SELECT
         EXTRACT(MONTH FROM date_insertion) AS mois,

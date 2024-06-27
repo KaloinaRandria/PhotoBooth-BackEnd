@@ -9,6 +9,7 @@ import org.photobooth.restapi.model.stat.ThemeCategStat;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PredictionService extends Service {
@@ -73,41 +74,33 @@ public class PredictionService extends Service {
         nextStat.setMonth(currMonthStr);
 
         int lastYearInt = getCurrentyear() - 1;
-        int lastTwoYearInt = getCurrentyear() - 2;
 
         try (StatService statService = new StatService()) {
             GenericObject lastYear = statService.getFinancialStat(lastYearInt);
-            GenericObject lastTwoYear = statService.getFinancialStat(lastTwoYearInt);
             GenericObject currYear = statService.getFinancialStat(getCurrentyear());
 
             List<Double> beneficeLastYear = (List<Double>) lastYear.getAttribute("benefice");
-            List<Double> beneficeLastTwoYear = (List<Double>) lastTwoYear.getAttribute("benefice");
             List<Double> beneficeCurrYear = (List<Double>) currYear.getAttribute("benefice");
 
             List<Double> benToCheckLast = Metric.getFirstNElements(beneficeLastYear, currMonthInt);
-            List<Double> benToCheckTwoLast = Metric.getFirstNElements(beneficeLastTwoYear, currMonthInt);
             List<Double> benToCheckCurr = Metric.getFirstNElements(beneficeCurrYear, currMonthInt);
 
             double totalLast = Calculator.calculateSum(benToCheckLast);
-            double totalTwoLast = Calculator.calculateSum(benToCheckTwoLast);
             double totalCurr = Calculator.calculateSum(benToCheckCurr);
             System.out.println("totalLast = " + totalLast);
-            System.out.println("totalTwoLast = " + totalTwoLast);
             System.out.println("totalCurr = " + totalCurr);
 
-            double averageLast = (totalLast + totalTwoLast) / 2;
+            double averageLast = (totalLast);
             System.out.println("averageLast = " + averageLast);
 
             double proportion = proportion(averageLast, totalCurr);
             System.out.println("proportion = " + proportion);
 
             double lastBenCurrMonth = beneficeLastYear.get(currMonthInt);
-            double lastTwoBenCurrMonth = beneficeLastTwoYear.get(currMonthInt);
             System.out.println("lastBenCurrMonth = " + lastBenCurrMonth);
-            System.out.println("lastTwoBenCurrMonth = " + lastTwoBenCurrMonth);
 
 
-            double averagLastMonth = (lastBenCurrMonth + lastTwoBenCurrMonth) / 2;
+            double averagLastMonth = (lastBenCurrMonth);
             double beneficeNextMonth = averagLastMonth * proportion;
 
             System.out.println("averagLastMonth = " + averagLastMonth);
@@ -148,9 +141,8 @@ public class PredictionService extends Service {
 
 
         List<ThemeCategStat> categStatsLast = getNgContext().executeToList(ThemeCategStat.class, query, currMonth + 1, currYear - 1);
-        List<ThemeCategStat> categStatsLastTwo = getNgContext().executeToList(ThemeCategStat.class, query, currMonth + 1, currYear - 2);
 
-        List<ThemeCategStat> suggestion = ThemeCategStat.suggestRanking(categStatsLastTwo, categStatsLast);
+        List<ThemeCategStat> suggestion = ThemeCategStat.suggestRanking(new ArrayList<>(), categStatsLast);
 
         if (suggestion.size() > 3) {
             return Metric.getFirstNElements(suggestion, 3);

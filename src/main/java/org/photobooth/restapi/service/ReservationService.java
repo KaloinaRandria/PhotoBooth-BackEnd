@@ -23,7 +23,7 @@ public class ReservationService extends Service {
         super();
     }
     public List<Reservation> getAllReservation() throws Exception {
-        return getNgContext().findWhereArgs(Reservation.class, "isValid = ? and isConfirmed = false and date_reservee >= current_timestamp order by heure_debut ", true);
+        return getNgContext().findWhereArgs(Reservation.class, "isValid = ? and isConfirmed = false and date_reservee >= current_date order by heure_debut ", true);
     }
 
     public List<Reservation> getAllReservationDone() throws Exception {
@@ -89,7 +89,7 @@ public class ReservationService extends Service {
     public Object isAvailable(ReservationInterval interval) throws Exception {
         GenericObject data = new GenericObject();
 
-        boolean flag = isAvailable(interval.getDebut(), interval.getFin());
+        boolean flag = isAvailable(interval.getDebut(), interval.getFin(), interval.getId_salle());
         data.addAttribute("flag", flag);
         data.addAttribute("bonus", false);
 
@@ -124,13 +124,13 @@ public class ReservationService extends Service {
         return data;
     }
 
-    private boolean isAvailable(Timestamp start, Timestamp end) throws Exception {
+    private boolean isAvailable(Timestamp start, Timestamp end , String id_salle) throws Exception {
         String query = "SELECT * FROM reservation WHERE " +
-                "(heure_debut BETWEEN ? AND ?) " +
+                "((heure_debut BETWEEN ? AND ?) " +
                 "OR (heure_fin BETWEEN ? AND ?) " +
-                "OR (heure_debut <= ? AND heure_fin >= ?)";
+                "OR (heure_debut <= ? AND heure_fin >= ?)) AND id_salle = ?";
 
-        RowResult rs = getNgContext().execute(query, start, end, start, end, start, end);
+        RowResult rs = getNgContext().execute(query, start, end, start, end, start, end, id_salle);
         return rs.isEmpty();
     }
 

@@ -7,6 +7,6 @@ import java.sql.SQLException;
 
 public class DataAccess {
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
-        return Driver.getPGConnection("postgres", "postgres", "photobooth");
+        return Driver.getPGConnection("postgres", "postgres", "photo");
     }
 }

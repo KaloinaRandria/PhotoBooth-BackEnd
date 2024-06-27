@@ -75,6 +75,7 @@ public class MaterielService extends Service {
 
         Metric.print(materiel);
         materiel.setImage_url("");
+        materiel.setPrix_achat(0.0);
         String s =  (String) getNgContext().save(materiel);
 
         Notification notification = new Notification();
